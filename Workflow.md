@@ -16,8 +16,8 @@ Kami menggunakan strategi branching berbasis Git Flow, dengan struktur utama seb
 ## 🔄 Workflow Pengembangan
 1. **Clone Repositori**
    ```bash
-   git clone https://github.com/username/edusiap.git
-   cd edusiap
+   git clone https://github.com/muhammad22015/EduSiap-8.git
+   cd Edusiap-8
    ```
 2. **Buat Branch Baru untuk Fitur**
    ```bash
