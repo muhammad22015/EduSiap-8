@@ -18,22 +18,25 @@ const register = async (req,res) => {
 
     const {username, email, password} = value;
 
-    const existingEmail = await Prisma.user.findUnique({ where: { email } });
-    if (existingEmail) {
-      return res.status(409).json({ status: 'Email sudah terdaftar' });
+    try {
+        const existingEmail = await Prisma.user.findUnique({ where: { email } });
+        if (existingEmail) {
+          return res.status(409).json({ status: 'Email sudah terdaftar' });
+        }
+    
+        const existingUsername = await Prisma.user.findUnique({ where: { username } });
+        if (existingUsername) {
+          return res.status(409).json({ status: 'Username sudah digunakan' });
+        }
+    
+        tempUsers.set(email, { username, email, password });
+    
+        await sendVerificationMail(email);
+    
+        return res.status(201).json({status: 'Verifikasi email telah dikirim' });
+    } catch(err) {
+        return res.status(500).json({status: "Server Error", error: err.message})
     }
-
-    const existingUsername = await Prisma.user.findUnique({ where: { username } });
-    if (existingUsername) {
-      return res.status(409).json({ status: 'Username sudah digunakan' });
-    }
-
-    tempUsers.set(email, { username, email, password });
-
-    await sendVerificationMail(email);
-
-    return res.json({ message: 'Verifikasi email telah dikirim' });
-
 }
 
 const verify = async (req,res) => {
