@@ -64,7 +64,7 @@ const verify = async (req,res) => {
         tempUsers.delete(email); 
         return res.send("Verifikasi Berhasil");
     } catch (err) {
-        return res.send(err);
+        return res.send("Token kadaluarsa");
     }
 }
 

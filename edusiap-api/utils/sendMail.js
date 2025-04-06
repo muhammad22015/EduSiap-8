@@ -15,7 +15,10 @@ const sendVerificationMail = async (email, url) => {
         from: `"EduSiap" <${process.env.MAIL_FROM_ADDRESS}>`,
         to: `${email}`,
         subject: "Verify your Email",
-        html: `<p>Click <a href="${url}">here</a> to verify your email.</p>`,
+        html: `
+                <p>Click <a href="${url}">here</a> to verify your email.</p>
+                <p>Expires in 1h</p>
+                `,
     };
 
     try {
