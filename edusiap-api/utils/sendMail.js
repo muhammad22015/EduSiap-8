@@ -10,10 +10,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-const sendVerificationMail = async (email) => {
-    const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: "1h"});
-    const url = `${process.env.BASE_URL}/users/verify?token=${token}`;
-
+const sendVerificationMail = async (email, url) => {
     const mailOptions = {
         from: `"EduSiap" <${process.env.MAIL_FROM_ADDRESS}>`,
         to: `${email}`,

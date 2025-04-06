@@ -3,6 +3,7 @@ const Joi = require('joi');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { sendVerificationMail } = require('../utils/sendMail');
+// require('dotenv').config();
 
 const tempUsers = new Map();
 
@@ -30,8 +31,10 @@ const register = async (req,res) => {
         }
     
         tempUsers.set(email, { username, email, password });
+        const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: "1h"});
+        const url = `${process.env.BASE_URL}/users/verify?token=${token}`;
     
-        await sendVerificationMail(email);
+        await sendVerificationMail(email, url);
     
         return res.status(201).json({status: 'Verifikasi email telah dikirim' });
     } catch(err) {
