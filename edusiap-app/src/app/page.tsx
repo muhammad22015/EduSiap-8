@@ -22,11 +22,16 @@ export default function Home() {
     router.push('/signup');
   };
 
+  const handleGoToGallery = () => {
+    router.push('/HomePage');
+  };
+
   return (
     <LoginForm
       onSubmit={handleLogin}
       onForgotPassword={handleForgotPassword}
       onSignUp={handleSignUp}
+      onGoToGallery={handleGoToGallery}
     />
   );
 }
