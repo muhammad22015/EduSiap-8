@@ -1,8 +1,32 @@
-// src/app/page.tsx
 'use client';
+
 import React from 'react';
-import LoginForm from './signup/SignUpForm';
+import { useRouter } from 'next/navigation'; // ✅ Import router
+import LoginForm from './LoginAsli/LoginForm';
 
 export default function Home() {
-  return <LoginForm />;
+  const router = useRouter();
+
+  const handleLogin = (email: string, password: string) => {
+    console.log('Login attempt:', email, password);
+    // logika autentikasi bisa ditaruh di sini
+  };
+
+  const handleForgotPassword = () => {
+    console.log('User clicked forgot password');
+    // arahkan ke halaman reset password, misalnya
+  };
+
+  const handleSignUp = () => {
+    console.log('User clicked Sign Up');
+    router.push('/signup');
+  };
+
+  return (
+    <LoginForm
+      onSubmit={handleLogin}
+      onForgotPassword={handleForgotPassword}
+      onSignUp={handleSignUp}
+    />
+  );
 }
