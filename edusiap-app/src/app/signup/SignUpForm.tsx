@@ -14,16 +14,24 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
     router.push('/');
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulasi pendaftaran berhasil, langsung redirect ke login
+    router.push('/');
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-cover bg-center"
-         style={{ backgroundImage: "url('/gambarBG2.jpeg')" }}>
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: "url('/gambarBG2.jpeg')" }}
+    >
       <div className="p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-[400px] max-sm:p-5 max-sm:rounded-3xl">
         <div className="mx-auto my-0 w-full max-w-[404px]">
           <h1 className="mb-2.5 text-3xl text-black">Welcome!</h1>
           <p className="mb-8 text-base text-black">
             Please Create Your Account!
           </p>
-          <form>
+          <form onSubmit={handleSubmit}>
             <InputField
               label="Name"
               type="text"

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation'; // ✅ Import router
+import { useRouter } from 'next/navigation';
 import LoginForm from './LoginAsli/LoginForm';
 
 export default function Home() {
@@ -26,12 +26,17 @@ export default function Home() {
     router.push('/HomePage');
   };
 
+  const handleAddVideo = () => {
+    router.push('/AddVideo');
+  };
+
   return (
     <LoginForm
       onSubmit={handleLogin}
       onForgotPassword={handleForgotPassword}
       onSignUp={handleSignUp}
       onGoToGallery={handleGoToGallery}
+      onAddVideo={handleAddVideo}
     />
   );
 }
