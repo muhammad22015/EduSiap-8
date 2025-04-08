@@ -9,12 +9,12 @@ export default function Home() {
 
   const handleLogin = (email: string, password: string) => {
     console.log('Login attempt:', email, password);
-    // logika autentikasi bisa ditaruh di sini
+   
   };
 
   const handleForgotPassword = () => {
     console.log('User clicked forgot password');
-    // arahkan ke halaman reset password, misalnya
+   
   };
 
   const handleSignUp = () => {

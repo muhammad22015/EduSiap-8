@@ -25,19 +25,16 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(email, password);
-    onGoToGallery(); // langsung arahkan ke Gallery
+    onGoToGallery();
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-[#F6E9DA]">
-      {/* Background Image */}
       <img
         src="https://cdn.builder.io/api/v1/image/assets/TEMP/c0d52516637309c6a7d9f01766fd46c0a52b6a06?placeholderIfAbsent=true&apiKey=600b45a3b00b44838808f9741fb53917"
         alt="Login Background"
         className="object-cover absolute inset-0 w-full h-full z-0"
       />
-
-      {/* Form Card */}
       <div className="relative z-10 p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-lg backdrop-blur-sm max-md:max-w-[400px] max-sm:p-5 max-sm:rounded-3xl">
         <div className="mx-auto w-full max-w-[404px]">
           <form onSubmit={handleSubmit} className="space-y-4">

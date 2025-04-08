@@ -16,7 +16,6 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulasi pendaftaran berhasil, langsung redirect ke login
     router.push('/');
   };
 

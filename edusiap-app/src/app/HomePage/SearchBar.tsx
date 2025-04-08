@@ -5,7 +5,6 @@ export const SearchBar: React.FC = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Implement search functionality here
     console.log('Searching for:', searchTerm);
   };
 
