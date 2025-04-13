@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.bg-quiz {
+  background-image: url('/GambarBGQuiz.png');
+  background-size: cover;
+  background-position: center;
+}

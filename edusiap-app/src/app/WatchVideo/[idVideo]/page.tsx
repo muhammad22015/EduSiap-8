@@ -1,7 +1,9 @@
 'use client';
+import Link from 'next/link';
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
 import { VideoCard } from '@/components/VideoCard';
+import { useParams } from 'next/navigation';
 
 import React from 'react';
 
@@ -18,6 +20,7 @@ const videoData = [
   ];
 
 export default function Home() {
+    const { idVideo } = useParams();
     return (
         <div className="flex min-h-screen bg-orange-100">
             <Sidebar />
@@ -25,10 +28,16 @@ export default function Home() {
                 <Header />
                 <div className="flex flex-col w-full">
                     <div className="w-full h-200 flex justify-center items-center">
-                        <div className='bg-white w-300 h-180 rounded-2xl border border-black'></div>    
+                        <iframe className='bg-white w-300 h-180 rounded-2xl border border-black' 
+                        src="https://www.youtube.com/embed/dt6SlDcMFsk"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen></iframe>    
                     </div>   
                     <div className="flex flex-row gap-12 h-50 w-full items-center justify-center">
+                        <Link href={`/WatchVideo/${idVideo}/quiz`}>
                         <button className='w-70 h-25 bg-green-800 rounded-2xl text-5xl'>QUIZ</button>
+                        </Link>
                     </div>
                     <div className='py-20 px-40 flex flex-4 w-full flex-row gap-12 flex-wrap justify-center align-middle'>
                         {videoData.map((video) => (
