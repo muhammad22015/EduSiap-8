@@ -17,7 +17,7 @@ const videoData = [
     { id: 7, title: 'Judul Video 7', uploader: 'Uploader Video 7', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/1e3afc0b78ef02b0beb0621c6b5ff12864414dc9' },
     { id: 8, title: 'Judul Video 8', uploader: 'Uploader Video 8', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/1e3afc0b78ef02b0beb0621c6b5ff12864414dc9' },
     { id: 9, title: 'Judul Video 9', uploader: 'Uploader Video 9', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/ce8c9c3998b0933c31020dd1b28849d4cc3003ca' },
-  ];
+];
 
 export default function Home() {
     const { idVideo } = useParams();
@@ -28,25 +28,27 @@ export default function Home() {
                 <Header />
                 <div className="flex flex-col w-full">
                     <div className="w-full h-200 flex justify-center items-center">
-                        <iframe className='bg-white w-300 h-180 rounded-2xl border border-black' 
-                        src="https://www.youtube.com/embed/dt6SlDcMFsk"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen></iframe>    
-                    </div>   
+                        <iframe className='bg-white w-300 h-180 rounded-2xl border border-black'
+                            src="https://www.youtube.com/embed/dt6SlDcMFsk"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen></iframe>
+                    </div>
                     <div className="flex flex-row gap-12 h-50 w-full items-center justify-center">
                         <Link href={`/WatchVideo/${idVideo}/quiz`}>
-                        <button className='w-70 h-25 bg-green-800 rounded-2xl text-5xl'>QUIZ</button>
+                            <button className='w-70 h-25 bg-green-800 rounded-2xl text-5xl'>QUIZ</button>
+                        </Link>
+                        <Link href="/pdfReader">
+                            <button className='w-70 h-25 bg-blue-800 rounded-2xl text-5xl text-white'>Download Materi</button>
                         </Link>
                     </div>
                     <div className='py-20 px-40 flex flex-4 w-full flex-row gap-12 flex-wrap justify-center align-middle'>
                         {videoData.map((video) => (
-                                <VideoCard key={video.id} {...video} />
-                              ))}
-                    </div> 
-                </div> 
+                            <VideoCard key={video.id} {...video} />
+                        ))}
+                    </div>
+                </div>
             </main>
         </div>
     );
-  }
-  
+}
