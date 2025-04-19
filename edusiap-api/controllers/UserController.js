@@ -5,8 +5,6 @@ const jwt = require('jsonwebtoken');
 const { sendVerificationMail } = require('../utils/sendMail');
 // require('dotenv').config();
 
-const tempUsers = new Map();
-
 const register = async (req,res) => {
     const schema = Joi.object({
         username: Joi.string().required(),
@@ -20,9 +18,31 @@ const register = async (req,res) => {
     const {username, email, password} = value;
 
     try {
-        const existingEmail = await Prisma.user.findUnique({ where: { email } });
-        if (existingEmail) {
-          return res.status(409).json({ status: 'Email sudah terdaftar' });
+        const existingUser = await Prisma.user.findUnique({ where: { email } });
+        if (existingUser) {
+            if (existingUser.is_verified) {
+                return res.status(409).json({ status: 'Email sudah terdaftar' });
+            }
+
+            const NOW = new Date();
+            const EMAIL_SENT = new Date(existingUser.created_at);
+            const HOUR = 60 * 60 * 1000;
+
+            if (NOW - EMAIL_SENT < HOUR) {
+                return res.status(429).json({ status: 'Link verifikasi telah dikirim, cek Email anda' });
+            }
+
+            await Prisma.user.update({
+                where: { email },
+                data: { created_at: new Date() }
+              });              
+
+            const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: "1h"});
+            const url = `${process.env.BASE_URL}/users/verify?token=${token}`;
+        
+            await sendVerificationMail(email, url, username);
+
+            return res.status(201).json({status: 'Verifikasi email telah dikirim' });
         }
     
         const existingUsername = await Prisma.user.findUnique({ where: { username } });
@@ -30,11 +50,19 @@ const register = async (req,res) => {
           return res.status(409).json({ status: 'Username sudah digunakan' });
         }
     
-        tempUsers.set(email, { username, email, password });
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await Prisma.user.create({
+            data: {
+                email: email,
+                username: username,
+                password: hashedPassword
+            }
+        })
+        
         const token = jwt.sign({email: email}, process.env.JWT_SECRET, {expiresIn: "1h"});
         const url = `${process.env.BASE_URL}/users/verify?token=${token}`;
     
-        await sendVerificationMail(email, url);
+        await sendVerificationMail(email, url, username);
     
         return res.status(201).json({status: 'Verifikasi email telah dikirim' });
     } catch(err) {
@@ -49,22 +77,22 @@ const verify = async (req,res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email } = decoded;
 
-        const tempUser = tempUsers.get(email);
-        if (!tempUser) return res.status(404).send('User tidak ditemukan atau Token kadaluarsa');
+        const user = await Prisma.user.findFirst({
+            where: { email }
+        });
+        if (!user) return res.status(404).send('User tidak ditemukan atau Token kadaluarsa');
+        if(user.is_verified) return res.status(404).send('Akun telah terverifikasi');
 
-        const hashedPassword = await bcrypt.hash(tempUser.password, 10);
-        await Prisma.user.create({
+        await Prisma.user.update({
+            where: { email },
             data: {
-                email: tempUser.email,
-                username: tempUser.username,
-                password: hashedPassword
+                is_verified: true,
             }
-        })
-
-        tempUsers.delete(email); 
+          });
+        
         return res.send("Verifikasi Berhasil");
     } catch (err) {
-        return res.send("Token kadaluarsa");
+        return res.send("Token Kadaluarsa");
     }
 }
 
@@ -80,6 +108,8 @@ const login = async (req,res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch) return res.status(401).json({status: "Password salah!"});
+
+        if(!user.is_verified) return res.status(401).json({status: "Verify Akun terlebih dahulu!"});
 
         return res.status(200).json({status: "Login Berhasil"});
     } catch (err) {
