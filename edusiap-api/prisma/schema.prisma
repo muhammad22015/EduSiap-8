@@ -103,6 +103,7 @@ model user {
 
 model video {
   video_id        Int               @id @default(autoincrement())
+  thumbnail       String            @db.VarChar(255)
   title           String            @db.VarChar(255)
   description     String?           @db.Text
   category        video_category    @default(Other)
