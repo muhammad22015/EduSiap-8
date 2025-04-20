@@ -5,12 +5,21 @@ interface InputFieldProps {
   type: string;
   placeholder: string;
   id: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label, type, placeholder, id }) => {
+const InputField: React.FC<InputFieldProps> = ({
+  label,
+  type,
+  placeholder,
+  id,
+  value,
+  onChange,
+}) => {
   return (
     <div className="relative mb-5">
-      <label htmlFor={id} className="mb-1.5 text-sm text-black">
+      <label htmlFor={id} className="mb-1.5 text-sm text-black block">
         {label}
       </label>
       <div className="relative">
@@ -18,6 +27,8 @@ const InputField: React.FC<InputFieldProps> = ({ label, type, placeholder, id })
           type={type}
           id={id}
           placeholder={placeholder}
+          value={value}
+          onChange={onChange}
           className="p-2.5 w-full text-xs rounded-xl border border-solid border-zinc-400 text-neutral-700"
         />
       </div>

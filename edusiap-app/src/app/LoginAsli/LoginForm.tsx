@@ -4,7 +4,7 @@ import React from 'react';
 import SocialButton from './SocialSignIn';
 
 type LoginFormProps = {
-  onSubmit: (email: string, password: string) => void;
+  onSubmit: (email: string, password: string) => Promise<{ status: string }>;  // Mengubah tipe onSubmit agar mengembalikan objek dengan status
   onForgotPassword: () => void;
   onSignUp: () => void;
   onGoToGallery: () => void;
@@ -21,11 +21,22 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [rememberMe, setRememberMe] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(email, password);
-    onGoToGallery();
+
+    try {
+      const loginResponse = await onSubmit(email, password); // Ini akan menerima objek dengan status
+      if (loginResponse.status === "Login Berhasil") {
+        // Navigate to the gallery after successful login
+        onGoToGallery();
+      } else {
+        setErrorMessage(loginResponse.status); // Menampilkan pesan error dari response
+      }
+    } catch (error) {
+      setErrorMessage('An error occurred during login. Please try again.'); // Catch unexpected errors
+    }
   };
 
   return (
@@ -67,6 +78,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 required
               />
             </div>
+
+            {errorMessage && <div className="text-red-600 text-sm">{errorMessage}</div>}
 
             <div className="flex items-center justify-between">
               <label className="flex items-center text-black text-sm">
