@@ -4,8 +4,7 @@ import { VideoCard } from './VideoCard';
 interface Video {
   video_id: number;
   title: string;
-  video_link: string;
-  thumbnail: string;
+  video_link: string; // URL video yang akan digunakan dalam iframe
 }
 
 export const VideoGrid: React.FC = () => {
@@ -22,7 +21,7 @@ export const VideoGrid: React.FC = () => {
           setVideos(data.response);
         } else {
           console.warn('Data response bukan array:', data.response);
-          setVideos([]); // fallback
+          setVideos([]); // fallback jika data tidak valid
         }
       } catch (error) {
         console.error('Gagal mengambil data video:', error);
@@ -39,7 +38,7 @@ export const VideoGrid: React.FC = () => {
           key={video.video_id}
           id={video.video_id}
           title={video.title}
-          video_link={video.thumbnail} // pakai thumbnail sebagai gambar
+          video_link={video.video_link} 
         />
       ))}
     </div>

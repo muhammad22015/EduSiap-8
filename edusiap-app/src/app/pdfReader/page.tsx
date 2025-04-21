@@ -8,8 +8,8 @@ import Link from "next/link";
 interface Storybook {
   book_id: number;
   title: string;
-  book_link: string;  // link untuk file PDF
-  thumbnail: string;  // link untuk gambar thumbnail
+  book_link: string; // Link ke buku
+  thumbnail: string;  // Menambahkan properti thumbnail
 }
 
 const PdfReaderPage = () => {
@@ -35,12 +35,14 @@ const PdfReaderPage = () => {
           <h1 className="text-4xl font-bold mb-8 text-black text-center">Modul Pembelajaran</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
             {books.map((book) => (
-              <Link
+              <a
                 key={book.book_id}
-                href={`/pdfReader/${book.book_id}`}
+                href={book.book_link} // Mengarahkan langsung ke book_link
+                target="_blank"      // Membuka link di tab baru
+                rel="noopener noreferrer" // Untuk keamanan
                 className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition"
               >
-                {/* Menampilkan thumbnail buku jika ada */}
+                {/* Menampilkan gambar thumbnail jika ada */}
                 {book.thumbnail && (
                   <img
                     src={book.thumbnail}
@@ -49,7 +51,7 @@ const PdfReaderPage = () => {
                   />
                 )}
                 <h2 className="text-xl font-semibold text-center text-lime-900">{book.title}</h2>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
