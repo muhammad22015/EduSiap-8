@@ -64,7 +64,7 @@ export default function WatchVideoPage() {
                   <button className="w-70 h-25 bg-green-800 rounded-2xl text-5xl">QUIZ</button>
                 </Link>
                 <Link href="/pdfReader">
-                  <button className="w-70 h-25 bg-blue-800 rounded-2xl text-5xl text-white">Download Materi</button>
+                  <button className="w-70 h-25 bg-green-800 rounded-2xl text-5xl">Story Book</button>
                 </Link>
               </div>
             </>
