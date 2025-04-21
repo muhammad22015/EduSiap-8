@@ -81,6 +81,7 @@ model quiz {
 
 model story_book {
   book_id      Int      @id @default(autoincrement())
+  thumbnail    String   @db.VarChar(255)
   title        String   @db.VarChar(255)
   pages_number Int?
   book_link    String   @db.VarChar(255)

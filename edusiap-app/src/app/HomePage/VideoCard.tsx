@@ -2,10 +2,9 @@ import React from 'react';
 import Link from 'next/link';
 
 interface VideoCardProps {
-  id?: number;
+  id: number;
   title: string;
-  uploader?: string;
-  video_link: string; // bisa thumbnail
+  video_link: string; // URL ke gambar thumbnail
 }
 
 export const VideoCard: React.FC<VideoCardProps> = ({ id, title, video_link }) => {

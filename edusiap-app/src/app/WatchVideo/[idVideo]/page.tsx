@@ -10,7 +10,7 @@ interface Video {
   id: number;
   title: string;
   uploader: string;
-  video_url: string; // asumsi ini link YouTube embed
+  video_url: string;
   thumbnail: string;
 }
 
