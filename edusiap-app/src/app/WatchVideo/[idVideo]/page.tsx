@@ -65,11 +65,11 @@ export default function WatchVideoPage() {
                     QUIZ
                   </button>
                 </Link>
-                <Link href="/pdfReader">
+                {/* <Link href="/pdfReader">
                   <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white">
                     Story Book
                   </button>
-                </Link>
+                </Link> */}
               </div>
             </>
           ) : (
