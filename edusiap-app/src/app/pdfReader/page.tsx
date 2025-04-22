@@ -1,19 +1,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
-import Link from "next/link";
 
 interface Storybook {
   book_id: number;
   title: string;
-  book_link: string; // Link ke buku
-  thumbnail: string;  // Menambahkan properti thumbnail
+  book_link: string;
 }
 
 const PdfReaderPage = () => {
   const [books, setBooks] = useState<Storybook[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -31,27 +31,29 @@ const PdfReaderPage = () => {
       <Sidebar />
       <main className="flex-1 ml-[97px]">
         <Header />
-        <div className="flex flex-col items-center justify-center w-full px-4 py-10">
-          <h1 className="text-4xl font-bold mb-8 text-black text-center">Modul Pembelajaran</h1>
+        <div className="flex flex-col items-center w-full px-4 py-10">
+          <h1 className="text-4xl font-bold mb-8 text-black text-center">
+            Buku Cerita Anak!
+          </h1>
+
+          {/* Grid daftar buku */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
             {books.map((book) => (
-              <a
+              <div
                 key={book.book_id}
-                href={book.book_link} // Mengarahkan langsung ke book_link
-                target="_blank"      // Membuka link di tab baru
-                rel="noopener noreferrer" // Untuk keamanan
-                className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition"
+                onClick={() => router.push(`/pdfReader/${book.book_id}`)}
+                className="cursor-pointer p-4 bg-white rounded-lg shadow hover:shadow-lg transition"
               >
-                {/* Menampilkan gambar thumbnail jika ada */}
-                {book.thumbnail && (
-                  <img
-                    src={book.thumbnail}
-                    alt={book.title}
-                    className="w-full h-48 object-cover rounded-md mb-4"
-                  />
-                )}
-                <h2 className="text-xl font-semibold text-center text-lime-900">{book.title}</h2>
-              </a>
+                {/* Gunakan path relatif untuk gambar */}
+                <img
+                  src={`/cover_sb1.png`} // Path relatif ke folder public
+                  alt={book.title}
+                  className="w-full h-48 object-contain rounded-md mb-4" // Gunakan object-contain
+                />
+                <h2 className="text-xl font-semibold text-center text-lime-900">
+                  {book.title}
+                </h2>
+              </div>
             ))}
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation'; // Gunakan useParams untuk mengambil parameter dari URL
+import { useParams, useRouter } from 'next/navigation';
 
 interface Answer {
   answer_id: number;
@@ -24,34 +24,65 @@ interface Quiz {
 }
 
 const QuizPage = () => {
-  const { idVideo } = useParams(); 
+  const { idVideo } = useParams();
+  const router = useRouter();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [selectedAnswers, setSelectedAnswers] = useState<Map<number, number>>(new Map());
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [showScorePopup, setShowScorePopup] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const OPTION_COLORS = [
+    'bg-red-200',  // Red
+    'bg-green-200',  // Green
+    'bg-yellow-200',  // Yellow
+    'bg-blue-200',  // Blue
+  ];
 
   useEffect(() => {
-    if (idVideo) {
-      const fetchQuiz = async () => {
-        try {
-          const response = await fetch(`http://localhost:5000/quiz/${idVideo}`);
-          const data = await response.json();
-          if (data.status === 'Authorized') {
-            setQuiz(data.response);
-          } else {
-            console.error('Quiz not found');
-          }
-        } catch (error) {
-          console.error('Error fetching quiz:', error);
-        }
-      };
+    const fetchQuiz = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/quiz/${idVideo}`);
+        const data = await response.json();
 
+        if (data.status === 'Authorized') {
+          setQuiz(data.response);
+        } else {
+          setError('Quiz not found');
+        }
+      } catch (error) {
+        console.error('Error fetching quiz:', error);
+        setError('Failed to load quiz');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (idVideo) {
       fetchQuiz();
     }
   }, [idVideo]);
 
-  const handleAnswerSelect = (questionId: number, answerId: number) => {
-    setSelectedAnswers((prev) => new Map(prev).set(questionId, answerId));
+  const handleAnswerSelect = (answerId: number) => {
+    const currentQuestion = quiz?.question[currentQuestionIndex];
+    if (currentQuestion) {
+      setSelectedAnswers((prev) => new Map(prev).set(currentQuestion.question_id, answerId));
+    }
+  };
+
+  const handleNextQuestion = () => {
+    if (quiz && currentQuestionIndex < quiz.question.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const handlePrevQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
   };
 
   const handleSubmit = () => {
@@ -71,99 +102,208 @@ const QuizPage = () => {
 
       setScore(correctAnswers);
       setIsSubmitted(true);
+      setShowScorePopup(true);
     }
   };
 
+  const handleBack = () => {
+    router.back();
+  };
+
+  const closePopup = () => {
+    setShowScorePopup(false);
+  };
+
+  // Calculate percentage for the pie chart
+  const calculatePercentage = () => {
+    if (!quiz) return 0;
+    return Math.round((score / quiz.question.length) * 100);
+  };
+
+  // Pie chart component
+  const PieChart = ({ percentage }: { percentage: number }) => {
+    const radius = 60;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+    return (
+      <svg width="180" height="180" viewBox="0 0 180 180" className="mx-auto mb-4">
+        <circle
+          cx="90"
+          cy="90"
+          r={radius}
+          fill="none"
+          stroke="#e5e7eb"
+          strokeWidth="12"
+        />
+        <circle
+          cx="90"
+          cy="90"
+          r={radius}
+          fill="none"
+          stroke="#10b981"
+          strokeWidth="12"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          transform="rotate(-90 90 90)"
+        />
+        <text
+          x="90"
+          y="90"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          className="text-2xl font-bold text-white"
+          fill="white"
+        >
+          {percentage}%
+        </text>
+      </svg>
+    );
+  };
+
+  const currentQuestion = quiz?.question[currentQuestionIndex];
+  const isLastQuestion = quiz && currentQuestionIndex === quiz.question.length - 1;
+  const isFirstQuestion = currentQuestionIndex === 0;
+  const hasSelectedAnswer = currentQuestion && selectedAnswers.has(currentQuestion.question_id);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen p-4 bg-quiz">
+        <div className="min-w-5/6 mx-20 my-10 p-5 bg-gray-900/90 rounded-lg shadow-md text-center relative">
+          <p className="text-white">Loading quiz data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen p-4 bg-quiz">
+        <div className="min-w-5/6 mx-20 my-10 p-5 bg-gray-900/90 rounded-lg shadow-md text-center relative">
+          <p className="text-red-500">{error}</p>
+          <button
+            onClick={handleBack}
+            className="mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="quiz-container">
-      <h1>{quiz ? quiz.title : 'Loading quiz...'}</h1>
-      {quiz ? (
-        <div className="questions">
-          {quiz.question.map((question) => (
-            <div key={question.question_id} className="question">
-              <h2>{question.title}</h2>
-              <div className="answers">
-                {question.answers.map((answer) => (
-                  <div key={answer.answer_id} className="answer-option">
-                    <input
-                      type="radio"
-                      id={`answer-${answer.answer_id}`}
-                      name={`question-${question.question_id}`}
-                      value={answer.answer_id}
-                      onChange={() => handleAnswerSelect(question.question_id, answer.answer_id)}
-                    />
-                    <label htmlFor={`answer-${answer.answer_id}`}>{answer.answer}</label>
-                  </div>
-                ))}
+    <div className="flex justify-center items-center min-h-screen p-4 bg-quiz">
+      <div className="min-w-5/6 mx-20 my-10 p-5 bg-gray-900/90 rounded-lg shadow-md text-center relative">
+        <h1 className="text-2xl font-bold text-white mb-6">
+          {quiz ? quiz.title : 'Quiz'}
+        </h1>
+
+        {quiz ? (
+          <div className="space-y-6">
+            {/* Progress indicator */}
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div
+                className="bg-green-600 h-2.5 rounded-full"
+                style={{ width: `${((currentQuestionIndex + 1) / quiz.question.length) * 100}%` }}
+              ></div>
+            </div>
+            <p className="text-md text-gray-200">
+              Question {currentQuestionIndex + 1} of {quiz.question.length}
+            </p>
+
+            {/* Current question */}
+            <div className="space-y-3">
+              <div className="flex">
+                <h2 className="text-4xl font-semibold text-white flex-1 text-left mb-10 mt-5">
+                  {currentQuestion?.title}
+                </h2>
+              </div>
+              <div className="flex gap-2 mt-10">
+                {currentQuestion?.answers.map((answer, index) => {
+                  const isSelected = selectedAnswers.get(currentQuestion.question_id) === answer.answer_id;
+                  const bgColor = OPTION_COLORS[index % OPTION_COLORS.length];
+
+                  return (
+                    <div
+                      key={answer.answer_id}
+                      className={`flex-1 p-3 mx-2 h-35 rounded-lg cursor-pointer transition-all duration-200 flex justify-center items-center ${isSelected
+                          ? `${bgColor} border border-white scale-[1.05]`
+                          : `${bgColor} bg-opacity-20 hover:bg-opacity-30 hover:scale-[1.05]`
+                        }`}
+                      onClick={() => handleAnswerSelect(answer.answer_id)}
+                    >
+                      <input
+                        type="radio"
+                        id={`answer-${answer.answer_id}`}
+                        name={`question-${currentQuestion.question_id}`}
+                        value={answer.answer_id}
+                        checked={isSelected}
+                        onChange={() => { }}
+                        className="hidden"
+                      />
+                      <label htmlFor={`answer-${answer.answer_id}`} className="cursor-pointer text-black text-2xl">
+                        {answer.answer}
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          ))}
-          <button onClick={handleSubmit} className="submit-button">Submit Quiz</button>
-        </div>
-      ) : (
-        <p>Loading quiz data...</p>
-      )}
 
-      {isSubmitted && (
-        <div className="result">
-          <h3>Quiz Completed!</h3>
-          <p>Your score: {score} / {quiz?.question.length}</p>
-        </div>
-      )}
+            {/* Navigation buttons */}
+            <div className="flex justify-between mt-8">
+              <button
+                onClick={handlePrevQuestion}
+                disabled={isFirstQuestion}
+                className={`py-2 px-4 rounded-md transition-colors ${isFirstQuestion ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+              >
+                Previous
+              </button>
 
-      <style jsx>{`
-        .quiz-container {
-          padding: 20px;
-          max-width: 800px;
-          margin: 0 auto;
-          background-color: #f9f9f9;
-          border-radius: 8px;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          text-align: center; /* Menambahkan text-align untuk membuat tulisan menjadi rata tengah */
-        }
+              {!isLastQuestion ? (
+                <button
+                  onClick={handleNextQuestion}
+                  disabled={!hasSelectedAnswer}
+                  className={`py-2 px-4 rounded-md transition-colors ${!hasSelectedAnswer ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'}`}
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  onClick={handleSubmit}
+                  disabled={!hasSelectedAnswer}
+                  className={`py-2 px-4 rounded-md transition-colors ${!hasSelectedAnswer ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'}`}
+                >
+                  Submit Quiz
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="text-white">No quiz data available</p>
+        )}
 
-        h1, h2, h3, p {
-          color: black; /* Membuat semua teks menjadi hitam */
-        }
-
-        .questions {
-          margin-top: 20px;
-        }
-
-        .question {
-          margin-bottom: 20px;
-        }
-
-        .answers {
-          margin-top: 10px;
-        }
-
-        .answer-option {
-          margin-bottom: 10px;
-        }
-
-        .submit-button {
-          display: block;
-          width: 100%;
-          padding: 10px;
-          background-color: #4CAF50;
-          color: white;
-          font-size: 16px;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        }
-
-        .submit-button:hover {
-          background-color: #45a049;
-        }
-
-        .result {
-          margin-top: 20px;
-          font-size: 18px;
-          font-weight: bold;
-        }
-      `}</style>
+        {/* Score Popup */}
+        {showScorePopup && (
+          <div className="fixed inset-0 bg-quiz bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-900/90 p-8 rounded-lg shadow-xl max-w-sm w-full">
+              <h3 className="text-2xl font-bold text-white mb-2">Quiz Completed!</h3>
+              <PieChart percentage={calculatePercentage()} />
+              <p className="text-lg mb-6 text-white">
+                You scored <span className="font-bold">{score}</span> out of <span className="font-bold">{quiz?.question.length}</span> questions correctly
+              </p>
+              <button
+                onClick={handleBack}
+                className="w-full py-2 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+              >
+                Back to Video
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

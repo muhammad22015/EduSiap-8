@@ -52,12 +52,14 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: "url('/gambarBG2.jpeg')" }}
-    >
-      <div className="p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:max-w-[400px] max-sm:p-5 max-sm:rounded-3xl">
-        <div className="mx-auto my-0 w-full max-w-[404px]">
+    <div className="relative min-h-screen flex items-center justify-center bg-[#F6E9DA]">
+    <img
+      src="https://cdn.builder.io/api/v1/image/assets/TEMP/c0d52516637309c6a7d9f01766fd46c0a52b6a06?placeholderIfAbsent=true&apiKey=600b45a3b00b44838808f9741fb53917"
+      alt="Login Background"
+      className="object-cover absolute inset-0 w-full h-full z-0"
+    />
+      <div className="relative z-10 p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-lg backdrop-blur-sm max-md:max-w-[400px] max-sm:p-5 max-sm:rounded-3xl">
+      <div className="mx-auto w-full max-w-[404px]">
           <h1 className="mb-2.5 text-3xl text-black">Welcome!</h1>
           <p className="mb-4 text-base text-black">Please Create Your Account!</p>
 

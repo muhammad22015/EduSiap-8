@@ -27,15 +27,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
     e.preventDefault();
 
     try {
-      const loginResponse = await onSubmit(email, password); // Ini akan menerima objek dengan status
+      const loginResponse = await onSubmit(email, password);
       if (loginResponse.status === "Login Berhasil") {
-        // Navigate to the gallery after successful login
         onGoToGallery();
       } else {
-        setErrorMessage(loginResponse.status); // Menampilkan pesan error dari response
+        setErrorMessage(loginResponse.status);
       }
     } catch (error) {
-      setErrorMessage('An error occurred during login. Please try again.'); // Catch unexpected errors
+      setErrorMessage('An error occurred during login. Please try again.');
     }
   };
 

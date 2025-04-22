@@ -48,23 +48,27 @@ export default function WatchVideoPage() {
           ) : video ? (
             <>
               {/* Menampilkan video menggunakan iframe */}
-              <div className="w-full h-200 flex justify-center items-center">
+              <div className="w-full max-w-6xl flex justify-center items-center mb-6">
                 <iframe
-                  className="bg-white w-300 h-180 rounded-2xl border border-black"
-                  src={video.video_link} // Menggunakan 'video_link' dari backend
+                  className="bg-white w-full h-[600px] rounded-2xl border border-black"
+                  src={video.video_link}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
                 ></iframe>
               </div>
-              <h1 className="text-4xl font-bold text-black mt-6">{video.title}</h1>
-              <p className="text-xl text-gray-700">{video.uploader}</p>
-              <div className="flex flex-row gap-12 h-50 w-full items-center justify-center mt-6">
+              <h1 className="text-3xl font-bold text-black mt-6">{video.title}</h1>
+              <p className="text-lg text-gray-700 mb-6">{video.uploader}</p>
+              <div className="flex flex-row gap-8 h-16 w-full items-center justify-center mt-6">
                 <Link href={`/WatchVideo/${idVideo}/quiz`}>
-                  <button className="w-70 h-25 bg-green-800 rounded-2xl text-5xl">QUIZ</button>
+                  <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white">
+                    QUIZ
+                  </button>
                 </Link>
                 <Link href="/pdfReader">
-                  <button className="w-70 h-25 bg-green-800 rounded-2xl text-5xl">Story Book</button>
+                  <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white">
+                    Story Book
+                  </button>
                 </Link>
               </div>
             </>
