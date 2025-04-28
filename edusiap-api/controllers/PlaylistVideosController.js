@@ -6,6 +6,9 @@ const playlistVideosById = async (req,res) => {
     try {
         const playlist_videos = await Prisma.playlist_videos.findMany({
             where: { playlist_id: parseInt(id)},
+            include: {
+                video: true
+            },
             orderBy: {
                 position: 'asc'
             },
