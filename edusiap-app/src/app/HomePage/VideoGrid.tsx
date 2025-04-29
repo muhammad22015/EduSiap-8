@@ -1,24 +1,76 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { VideoCard } from './VideoCard';
 
-const videoData = [
-  { id: 1, title: 'Judul Video 1', uploader: 'Uploader Video 1', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-  { id: 2, title: 'Judul Video 2', uploader: 'Uploader Video 2', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-  { id: 3, title: 'Judul Video 3', uploader: 'Uploader Video 3', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/8819b79c2b055f6b97e15a4b4ef5d4f0e37618c4' },
-  { id: 4, title: 'Judul Video 4', uploader: 'Uploader Video 4', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-  { id: 5, title: 'Judul Video 5', uploader: 'Uploader Video 5', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-  { id: 6, title: 'Judul Video 6', uploader: 'Uploader Video 6', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-  { id: 7, title: 'Judul Video 7', uploader: 'Uploader Video 7', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/1e3afc0b78ef02b0beb0621c6b5ff12864414dc9' },
-  { id: 8, title: 'Judul Video 8', uploader: 'Uploader Video 8', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/1e3afc0b78ef02b0beb0621c6b5ff12864414dc9' },
-  { id: 9, title: 'Judul Video 9', uploader: 'Uploader Video 9', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/ce8c9c3998b0933c31020dd1b28849d4cc3003ca' },
-];
+interface Video {
+  video_id: number;
+  title: string;
+  video_link: string;
+}
 
-export const VideoGrid: React.FC = () => {
+interface VideoGridProps {
+  searchQuery: string;
+}
+
+export const VideoGrid: React.FC<VideoGridProps> = ({ searchQuery }) => {
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('http://localhost:5000/videos');
+        const data = await response.json();
+        
+        if (Array.isArray(data.response)) {
+          setVideos(data.response);
+        } else {
+          console.warn('Data response bukan array:', data.response);
+          setVideos([]);
+        }
+      } catch (error) {
+        console.error('Gagal mengambil data video:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  // Filter videos based on search query
+  const filteredVideos = videos.filter(video =>
+    video.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="grid gap-12 px-0 py-4 grid-cols-[repeat(3,1fr)] max-md:grid-cols-[repeat(2,1fr)] max-sm:grid-cols-[1fr]">
-      {videoData.map((video) => (
-        <VideoCard key={video.id} {...video} />
-      ))}
+    <div className="mt-[101px] px-0 py-4">
+      {isLoading ? (
+        <div className="text-center py-12">
+          <p className="text-gray-600 text-lg">Memuat video...</p>
+        </div>
+      ) : (
+        <div className="grid gap-12 grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
+          {filteredVideos.length > 0 ? (
+            filteredVideos.map((video) => (
+              <VideoCard
+                key={video.video_id}
+                id={video.video_id}
+                title={video.title}
+                video_link={video.video_link}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-600 text-lg">
+                {searchQuery 
+                  ? `Tidak ditemukan video dengan judul "${searchQuery}"` 
+                  : 'Tidak ada video yang tersedia'}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

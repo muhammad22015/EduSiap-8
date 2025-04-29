@@ -1,7 +1,10 @@
-'use client';
-import React from 'react';
+// app/HomePage/page.tsx
 import { VideoGallery } from './VideoGallery';
 
-export default function VideoGalleryPage() {
-  return <VideoGallery />;
+interface HomePageProps {
+  searchParams: { q?: string };
+}
+
+export default function HomePage({ searchParams }: HomePageProps) {
+  return <VideoGallery initialSearchQuery={searchParams.q || ''} />;
 }

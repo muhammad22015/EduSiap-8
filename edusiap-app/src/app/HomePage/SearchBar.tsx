@@ -23,7 +23,7 @@ export const SearchBar: React.FC = () => {
         className="absolute top-2/4 left-[23px] text-3xl text-black -translate-y-2/4 bg-transparent border-none w-[80%] focus:outline-none"
         aria-label="Search input"
       />
-      Continuing from where we left off:
+    
 
       {searchTerm && (
         <button

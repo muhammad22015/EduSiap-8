@@ -1,174 +1,192 @@
 'use client';
-import Link from 'next/link';
-import ArrowIcon from '@/components/ArrowIcon';
-import { useState } from 'react';
 
-// Define types for your quiz data
-type QuizQuestion = {
-  id: number;
-  question: string;
-  options: string[];
-  correctAnswer: string;
-  points: number;
-  type?: 'multiple-choice' | 'true-false' | 'multiple-answer';
-};
+import { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+
+interface Answer {
+  answer_id: number;
+  answer: string;
+  is_correct: boolean;
+}
+
+interface Question {
+  question_id: number;
+  title: string;
+  position: number;
+  answers: Answer[];
+}
+
+interface Quiz {
+  quiz_id: number;
+  video_id: number;
+  title: string;
+  question: Question[];
+}
 
 const QuizPage = () => {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  const [score, setScore] = useState<number>(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [showResult, setShowResult] = useState<boolean>(false);
-  const [quizCompleted, setQuizCompleted] = useState<boolean>(false);
-  const [timeLeft, setTimeLeft] = useState<number>(10);
+  const { idVideo } = useParams();
+  const router = useRouter();
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [selectedAnswers, setSelectedAnswers] = useState<Map<number, number>>(new Map());
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [score, setScore] = useState(0);
+  const [showScorePopup, setShowScorePopup] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Color palette for options
   const OPTION_COLORS = [
-    'bg-[#FF0000]',  // Red
-    'bg-[#5EFF00]',  // Green
-    'bg-[#FFFF00]',  // Yellow
-    'bg-[#0090FF]',  // Blue
+    'bg-red-200',  // Red
+    'bg-green-200',  // Green
+    'bg-yellow-200',  // Yellow
+    'bg-blue-200',  // Blue
   ];
 
-  // Sample quiz data with proper typing
-  const quizData: QuizQuestion[] = [
-    {
-      id: 1,
-      question: "What is the capital of France?",
-      options: ["London", "Paris", "Berlin", "Madrid"],
-      correctAnswer: "Paris",
-      points: 10,
-      type: 'multiple-choice'
-    },
-    {
-      id: 2,
-      question: "Which planet is known as the Red Planet?",
-      options: ["Venus", "Mars", "Jupiter", "Saturn"],
-      correctAnswer: "Mars",
-      points: 10,
-      type: 'multiple-choice'
-    },
-    {
-      id: 3,
-      question: "Which planet is known as the Red Planet?",
-      options: ["Venus", "Jupyter", "Mars", "Saturn"],
-      correctAnswer: "Mars",
-      points: 10,
-      type: 'multiple-choice'
-    },
-  ];
+  useEffect(() => {
+    const fetchQuiz = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/quiz/${idVideo}`);
+        const data = await response.json();
 
-  const handleOptionSelect = (option: string): void => {
-    if (showResult) return;
-    
-    setSelectedOptions(prev => ({
-      ...prev,
-      [quizData[currentQuestionIndex].id]: { selectedAnswer: option }
-    }));
-    
-    setSelectedOption(option);
-    setShowResult(true);
-    
-    if (option === quizData[currentQuestionIndex].correctAnswer) {
-      setScore(score + quizData[currentQuestionIndex].points);
+        if (data.status === 'Authorized') {
+          setQuiz(data.response);
+        } else {
+          setError('Quiz not found');
+        }
+      } catch (error) {
+        console.error('Error fetching quiz:', error);
+        setError('Failed to load quiz');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (idVideo) {
+      fetchQuiz();
+    }
+  }, [idVideo]);
+
+  const handleAnswerSelect = (answerId: number) => {
+    const currentQuestion = quiz?.question[currentQuestionIndex];
+    if (currentQuestion) {
+      setSelectedAnswers((prev) => new Map(prev).set(currentQuestion.question_id, answerId));
     }
   };
 
-  const handleNextQuestion = (): void => {
-    if (currentQuestionIndex < quizData.length - 1) {
+  const handleNextQuestion = () => {
+    if (quiz && currentQuestionIndex < quiz.question.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedOption(null);
-      setShowResult(false);
-      setTimeLeft(10);
-    } else {
-      setQuizCompleted(true);
     }
   };
 
-  const [selectedOptions, setSelectedOptions] = useState<Record<number, {selectedAnswer: string}>>({});
+  const handlePrevQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+    }
+  };
 
-  if (quizCompleted) {
-    const totalPossibleScore = quizData.reduce((total, q) => total + q.points, 0);
-    const percentageScore = Math.round((score / totalPossibleScore) * 100);
-    
-    // Calculate correct/incorrect counts
-    const correctAnswers = quizData.filter(q => 
-      q.correctAnswer === selectedOptions[q.id]?.selectedAnswer
-    ).length;
-    const totalQuestions = quizData.length;
-  
-    // Pie chart calculations (using SVG)
-    const radius = 80;
+  const handleSubmit = () => {
+    if (quiz) {
+      let correctAnswers = 0;
+      quiz.question.forEach((question) => {
+        const selectedAnswerId = selectedAnswers.get(question.question_id);
+        if (selectedAnswerId) {
+          const selectedAnswer = question.answers.find(
+            (answer) => answer.answer_id === selectedAnswerId
+          );
+          if (selectedAnswer?.is_correct) {
+            correctAnswers++;
+          }
+        }
+      });
+
+      setScore(correctAnswers);
+      setIsSubmitted(true);
+      setShowScorePopup(true);
+    }
+  };
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  const closePopup = () => {
+    setShowScorePopup(false);
+  };
+
+  // Calculate percentage for the pie chart
+  const calculatePercentage = () => {
+    if (!quiz) return 0;
+    return Math.round((score / quiz.question.length) * 100);
+  };
+
+  // Pie chart component
+  const PieChart = ({ percentage }: { percentage: number }) => {
+    const radius = 60;
     const circumference = 2 * Math.PI * radius;
-    const correctPercentage = (correctAnswers / totalQuestions) * 100;
-    const correctOffset = circumference - (correctPercentage / 100) * circumference;
-  
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-quiz">
-        {/* <div className='bg-black w-25 h-25 fixed top-20 left-20'></div> */}
-        <Link href="../page.tsx">
-        <ArrowIcon />
-        </Link>
-        <div className="bg-[#303030] p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-          <h1 className="text-3xl font-bold mb-6">Quiz Completed!</h1>
-          
-          {/* Score Display (out of 100) */}
-          <div className="text-5xl font-bold mb-6">
-            <span className="text-blue-500">{percentageScore}</span>
-            <span className="text-gray-200">/100</span>
-          </div>
-          
-          {/* Pie Chart Visualization */}
-          <div className="flex justify-center my-8">
-            <svg width="200" height="200" viewBox="0 0 200 200" className="transform -rotate-90">
-              <circle
-                cx="100"
-                cy="100"
-                r={radius}
-                fill="transparent"
-                stroke="#e5e7eb" // Gray background
-                strokeWidth="40"
-              />
-              <circle
-                cx="100"
-                cy="100"
-                r={radius}
-                fill="transparent"
-                stroke="#10B981" // Green for correct
-                strokeWidth="40"
-                strokeDasharray={circumference}
-                strokeDashoffset={correctOffset}
-              />
-            </svg>
-          </div>
-          
-          {/* Detailed Score Breakdown */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="bg-green-50 p-4 rounded-lg">
-              <p className="text-green-600 font-bold">Correct</p>
-              <p className="text-black text-2xl">{correctAnswers}</p>
-            </div>
-            <div className="bg-red-50 p-4 rounded-lg">
-              <p className="text-red-600 font-bold">Incorrect</p>
-              <p className="text-black text-2xl">{totalQuestions - correctAnswers}</p>
-            </div>
-          </div>
-          
-          {/* Original Score Display */}
-          <p className="text-xl text-gray-400 mb-4">
-            Raw score: {score}/{totalPossibleScore} points
-          </p>
-          
-          <button 
-            onClick={() => {
-              setCurrentQuestionIndex(0);
-              setScore(0);
-              setSelectedOption(null);
-              setShowResult(false);
-              setQuizCompleted(false);
-            }}
-            className="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+      <svg width="180" height="180" viewBox="0 0 180 180" className="mx-auto mb-4">
+        <circle
+          cx="90"
+          cy="90"
+          r={radius}
+          fill="none"
+          stroke="#e5e7eb"
+          strokeWidth="12"
+        />
+        <circle
+          cx="90"
+          cy="90"
+          r={radius}
+          fill="none"
+          stroke="#10b981"
+          strokeWidth="12"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          transform="rotate(-90 90 90)"
+        />
+        <text
+          x="90"
+          y="90"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          className="text-2xl font-bold text-white"
+          fill="white"
+        >
+          {percentage}%
+        </text>
+      </svg>
+    );
+  };
+
+  const currentQuestion = quiz?.question[currentQuestionIndex];
+  const isLastQuestion = quiz && currentQuestionIndex === quiz.question.length - 1;
+  const isFirstQuestion = currentQuestionIndex === 0;
+  const hasSelectedAnswer = currentQuestion && selectedAnswers.has(currentQuestion.question_id);
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen p-4 bg-quiz">
+        <div className="min-w-5/6 mx-20 my-10 p-5 bg-gray-900/90 rounded-lg shadow-md text-center relative">
+          <p className="text-white">Loading quiz data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen p-4 bg-quiz">
+        <div className="min-w-5/6 mx-20 my-10 p-5 bg-gray-900/90 rounded-lg shadow-md text-center relative">
+          <p className="text-red-500">{error}</p>
+          <button
+            onClick={handleBack}
+            className="mt-4 py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
           >
-            Restart Quiz
+            Go Back
           </button>
         </div>
       </div>
@@ -176,69 +194,115 @@ const QuizPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-quiz relative">
-      {showResult && (
-        <div className="fixed inset-0 bg-[#404040]/80 flex items-center justify-center z-50">
-          <div className="bg-[#222222] p-8 rounded-lg shadow-xl max-w-md w-full mx-4">
-            <div className="text-center">
-              {selectedOption === quizData[currentQuestionIndex].correctAnswer ? (
-                <div className="text-green-400 font-bold text-3xl mb-4">✅ Correct!</div>
-              ) : (
-                <div className="text-red-400 font-bold text-3xl mb-4">❌ Incorrect</div>
-              )}
+    <div className="flex justify-center items-center min-h-screen p-4 bg-quiz">
+      <div className="min-w-5/6 mx-20 my-10 p-5 bg-gray-900/90 rounded-lg shadow-md text-center relative">
+        <h1 className="text-2xl font-bold text-white mb-6">
+          {quiz ? quiz.title : 'Quiz'}
+        </h1>
+
+        {quiz ? (
+          <div className="space-y-6">
+            {/* Progress indicator */}
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div
+                className="bg-green-600 h-2.5 rounded-full"
+                style={{ width: `${((currentQuestionIndex + 1) / quiz.question.length) * 100}%` }}
+              ></div>
+            </div>
+            <p className="text-md text-gray-200">
+              Question {currentQuestionIndex + 1} of {quiz.question.length}
+            </p>
+
+            {/* Current question */}
+            <div className="space-y-3">
+              <div className="flex">
+                <h2 className="text-4xl font-semibold text-white flex-1 text-left mb-10 mt-5">
+                  {currentQuestion?.title}
+                </h2>
+              </div>
+              <div className="flex gap-2 mt-10">
+                {currentQuestion?.answers.map((answer, index) => {
+                  const isSelected = selectedAnswers.get(currentQuestion.question_id) === answer.answer_id;
+                  const bgColor = OPTION_COLORS[index % OPTION_COLORS.length];
+
+                  return (
+                    <div
+                      key={answer.answer_id}
+                      className={`flex-1 p-3 mx-2 h-35 rounded-lg cursor-pointer transition-all duration-200 flex justify-center items-center ${isSelected
+                          ? `${bgColor} border border-white scale-[1.05]`
+                          : `${bgColor} bg-opacity-20 hover:bg-opacity-30 hover:scale-[1.05]`
+                        }`}
+                      onClick={() => handleAnswerSelect(answer.answer_id)}
+                    >
+                      <input
+                        type="radio"
+                        id={`answer-${answer.answer_id}`}
+                        name={`question-${currentQuestion.question_id}`}
+                        value={answer.answer_id}
+                        checked={isSelected}
+                        onChange={() => { }}
+                        className="hidden"
+                      />
+                      <label htmlFor={`answer-${answer.answer_id}`} className="cursor-pointer text-black text-2xl">
+                        {answer.answer}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Navigation buttons */}
+            <div className="flex justify-between mt-8">
               <button
-                onClick={handleNextQuestion}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg text-xl w-full"
+                onClick={handlePrevQuestion}
+                disabled={isFirstQuestion}
+                className={`py-2 px-4 rounded-md transition-colors ${isFirstQuestion ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
               >
-                {currentQuestionIndex === quizData.length - 1 ? 'See Final Results' : 'Next Question'}
+                Previous
+              </button>
+
+              {!isLastQuestion ? (
+                <button
+                  onClick={handleNextQuestion}
+                  disabled={!hasSelectedAnswer}
+                  className={`py-2 px-4 rounded-md transition-colors ${!hasSelectedAnswer ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'}`}
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  onClick={handleSubmit}
+                  disabled={!hasSelectedAnswer}
+                  className={`py-2 px-4 rounded-md transition-colors ${!hasSelectedAnswer ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'}`}
+                >
+                  Submit Quiz
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <p className="text-white">No quiz data available</p>
+        )}
+
+        {/* Score Popup */}
+        {showScorePopup && (
+          <div className="fixed inset-0 bg-quiz bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-900/90 p-8 rounded-lg shadow-xl max-w-sm w-full">
+              <h3 className="text-2xl font-bold text-white mb-2">Quiz Completed!</h3>
+              <PieChart percentage={calculatePercentage()} />
+              <p className="text-lg mb-6 text-white">
+                You scored <span className="font-bold">{score}</span> out of <span className="font-bold">{quiz?.question.length}</span> questions correctly
+              </p>
+              <button
+                onClick={handleBack}
+                className="w-full py-2 px-6 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+              >
+                Back to Video
               </button>
             </div>
           </div>
-        </div>
-      )}
-  
-      <div className="flex flex-col bg-[#222222]/90 rounded-lg shadow-lg max-w-5/6 w-full">
-        <span className="absolute top-40 left-1/2 transform -translate-x-1/2 flex justify-center items-center p-4 border border-black bg-[#010101] rounded-full w-36 self-center text-4xl text-white">
-          {currentQuestionIndex + 1}/{quizData.length}
-        </span>
-        <h2 className="w-full min-h-100 text-center mt-24 text-4xl mb-6 text-white">
-          {quizData[currentQuestionIndex].question}
-        </h2>
-        
-        <div className="flex w-full">
-          {quizData[currentQuestionIndex].options.map((option, index) => {
-            const isCorrect = option === quizData[currentQuestionIndex].correctAnswer;
-            const isSelected = option === selectedOption;
-            const isWrongSelected = isSelected && !isCorrect;
-            
-            let bgColor = OPTION_COLORS[index % OPTION_COLORS.length];
-            let textColor = OPTION_COLORS[index % OPTION_COLORS.length];
-            if (showResult) {
-            textColor = 'text-white';
-              if (isCorrect) {
-                bgColor = 'bg-green-900';
-              } else if (isWrongSelected) {
-                bgColor = 'bg-red-900';
-              } else {
-                bgColor = 'bg-gray-900';
-              }
-            }
-
-            return (
-              <div
-                key={index}
-                onClick={() => !showResult && handleOptionSelect(option)}
-                className={`flex p-4 h-64 grow border rounded-lg cursor-pointer transition-all text-black text-4xl justify-center items-center
-                  ${bgColor}
-                  ${textColor}
-                  ${selectedOption === option ? 'border-blue-500' : 'border-gray-300'}
-                  ${showResult ? 'cursor-default' : 'hover:opacity-90'}`}
-              >
-                {option}
-              </div>
-            );
-          })}
-        </div>
+        )}
       </div>
     </div>
   );

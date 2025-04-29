@@ -2,51 +2,81 @@
 import Link from 'next/link';
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
-import { VideoCard } from '@/components/VideoCard';
 import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
-import React from 'react';
+interface Video {
+  id: number;
+  title: string;
+  uploader: string;
+  video_link: string; // Menggunakan 'video_link' sesuai nama kolom di database
+}
 
-const videoData = [
-    { id: 1, title: 'Judul Video 1', uploader: 'Uploader Video 1', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-    { id: 2, title: 'Judul Video 2', uploader: 'Uploader Video 2', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-    { id: 3, title: 'Judul Video 3', uploader: 'Uploader Video 3', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/8819b79c2b055f6b97e15a4b4ef5d4f0e37618c4' },
-    { id: 4, title: 'Judul Video 4', uploader: 'Uploader Video 4', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-    { id: 5, title: 'Judul Video 5', uploader: 'Uploader Video 5', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-    { id: 6, title: 'Judul Video 6', uploader: 'Uploader Video 6', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/68842a156117e1eaa6cbe4eb01fe2265a5d63ab2' },
-    { id: 7, title: 'Judul Video 7', uploader: 'Uploader Video 7', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/1e3afc0b78ef02b0beb0621c6b5ff12864414dc9' },
-    { id: 8, title: 'Judul Video 8', uploader: 'Uploader Video 8', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/1e3afc0b78ef02b0beb0621c6b5ff12864414dc9' },
-    { id: 9, title: 'Judul Video 9', uploader: 'Uploader Video 9', thumbnail: 'https://cdn.builder.io/api/v1/image/assets/TEMP/ce8c9c3998b0933c31020dd1b28849d4cc3003ca' },
-  ];
+export default function WatchVideoPage() {
+  const { idVideo } = useParams(); // Mengambil ID video dari URL parameter
+  const [video, setVideo] = useState<Video | null>(null); // State untuk menyimpan data video
+  const [loading, setLoading] = useState(true); // State loading untuk menunggu data
 
-export default function Home() {
-    const { idVideo } = useParams();
-    return (
-        <div className="flex min-h-screen bg-orange-100">
-            <Sidebar />
-            <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[97px]">
-                <Header />
-                <div className="flex flex-col w-full">
-                    <div className="w-full h-200 flex justify-center items-center">
-                        <iframe className='bg-white w-300 h-180 rounded-2xl border border-black' 
-                        src="https://www.youtube.com/embed/dt6SlDcMFsk"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen></iframe>    
-                    </div>   
-                    <div className="flex flex-row gap-12 h-50 w-full items-center justify-center">
-                        <Link href={`/WatchVideo/${idVideo}/quiz`}>
-                        <button className='w-70 h-25 bg-green-800 rounded-2xl text-5xl'>QUIZ</button>
-                        </Link>
-                    </div>
-                    <div className='py-20 px-40 flex flex-4 w-full flex-row gap-12 flex-wrap justify-center align-middle'>
-                        {videoData.map((video) => (
-                                <VideoCard key={video.id} {...video} />
-                              ))}
-                    </div> 
-                </div> 
-            </main>
+  // Mengambil data video berdasarkan ID saat komponen pertama kali di-render
+  useEffect(() => {
+    const fetchVideo = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/videos/watch?id=${idVideo}`);
+        const data = await res.json();
+        
+        // Jika statusnya 'Authorized', maka simpan data video ke state
+        if (data.status === 'Authorized') {
+          setVideo(data.response);
+        }
+        setLoading(false); // Mengubah loading menjadi false setelah data diterima
+      } catch (err) {
+        console.error(err);
+        setLoading(false); // Set loading false jika terjadi error
+      }
+    };
+    fetchVideo();
+  }, [idVideo]);
+
+  return (
+    <div className="flex min-h-screen bg-orange-100">
+      <Sidebar />
+      <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[97px]">
+        <Header />
+        <div className="flex flex-col w-full items-center justify-center">
+          {loading ? (
+            <p className="text-center text-xl text-gray-600 mt-20">Loading video...</p>
+          ) : video ? (
+            <>
+              {/* Menampilkan video menggunakan iframe */}
+              <div className="w-full max-w-6xl flex justify-center items-center mb-6">
+                <iframe
+                  className="bg-white w-full h-[600px] rounded-2xl border border-black"
+                  src={video.video_link}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+              <h1 className="text-3xl font-bold text-black mt-6">{video.title}</h1>
+              <p className="text-lg text-gray-700 mb-6">{video.uploader}</p>
+              <div className="flex flex-row gap-8 h-16 w-full items-center justify-center mt-6">
+                <Link href={`/WatchVideo/${idVideo}/quiz`}>
+                  <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white">
+                    QUIZ
+                  </button>
+                </Link>
+                {/* <Link href="/pdfReader">
+                  <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white">
+                    Story Book
+                  </button>
+                </Link> */}
+              </div>
+            </>
+          ) : (
+            <p className="text-center text-xl text-gray-600 mt-20">Video not found.</p>
+          )}
         </div>
-    );
-  }
-  
+      </main>
+    </div>
+  );
+}
