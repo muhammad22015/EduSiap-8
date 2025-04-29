@@ -1,49 +1,122 @@
-import React, { useState } from 'react';
+// components/SearchBar.tsx
+"use client";
+import React, { useState, useEffect } from 'react';
 
-export const SearchBar: React.FC = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+interface SearchBarProps {
+  onSearch: (query: string) => void;
+  placeholder?: string;
+  initialValue?: string;
+}
+
+export const SearchBar: React.FC<SearchBarProps> = ({ 
+  onSearch, 
+  placeholder = 'Search...',
+  initialValue = ''
+}) => {
+  const [searchTerm, setSearchTerm] = useState(initialValue);
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Sync with initialValue
+  useEffect(() => {
+    setSearchTerm(initialValue);
+  }, [initialValue]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Searching for:', searchTerm);
+    onSearch(searchTerm);
+  };
+
+  const handleClear = () => {
+    setSearchTerm('');
+    onSearch('');
   };
 
   return (
-    <form onSubmit={handleSearch} className="relative flex-1 mx-5 my-0 h-[59px] max-w-[649px] max-sm:max-w-full">
-      <svg id="121:1044" width="649" height="59" viewBox="0 0 649 59" fill="none" xmlns="http://www.w3.org/2000/svg" className="search-bar" style={{ width: '100%', height: '100%' }}>
-        <path d="M10 0.5H639C644.247 0.5 648.5 4.7533 648.5 10V49C648.5 54.2467 644.247 58.5 639 58.5H10C4.7533 58.5 0.5 54.2467 0.5 49V10C0.5 4.7533 4.75329 0.5 10 0.5Z" stroke="black"></path>
-      </svg>
-      <label htmlFor="search-input" className="sr-only">Search</label>
-      <input
-        id="search-input"
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search"
-        className="absolute top-2/4 left-[23px] text-3xl text-black -translate-y-2/4 bg-transparent border-none w-[80%] focus:outline-none"
-        aria-label="Search input"
-      />
-      Continuing from where we left off:
-
-      {searchTerm && (
-        <button
-          type="button"
-          onClick={() => setSearchTerm('')}
-          className="absolute right-[140px] top-1/2 transform -translate-y-1/2 cursor-pointer"
-          aria-label="Clear search"
-        >
-          <svg id="121:1180" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="search-x">
-            <path d="M36 12L12 36M12 12L36 36" stroke="#1E1E1E" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"></path>
+    <form 
+      onSubmit={handleSearch}
+      className={`relative w-full transition-all duration-200 ${isFocused ? 'ring-2 ring-orange-500' : ''}`}
+    >
+      <div className="relative">
+        <input
+          id="search-input"
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={placeholder}
+          className="w-full h-14 pl-12 pr-14 text-black rounded-xl border-2 border-gray-300 focus:border-orange-500 focus:outline-none text-lg transition-all duration-200"
+          aria-label="Search input"
+        />
+        
+        {/* Search icon */}
+        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+          <svg 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+            className="text-gray-400"
+          >
+            <path 
+              d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
+            <path 
+              d="M21 21L16.65 16.65" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round"
+            />
           </svg>
+        </div>
+
+        {/* Clear button (visible when there's text) */}
+        {searchTerm && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="absolute right-12 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Clear search"
+          >
+            <svg 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-gray-500"
+            >
+              <path 
+                d="M18 6L6 18M6 6L18 18" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        )}
+
+        {/* Search button */}
+        <button
+          type="submit"
+          className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-12 w-20 rounded-lg font-medium transition-colors duration-200 ${
+            searchTerm 
+              ? 'bg-orange-500 text-white hover:bg-orange-600' 
+              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+          }`}
+          disabled={!searchTerm}
+          aria-label="Submit search"
+        >
+          Search
         </button>
-      )}
-      <button
-        type="submit"
-        className="absolute right-5 top-2/4 rounded-xl border border-black border-solid -translate-y-2/4 bg-zinc-300 h-[59px] w-[77px]"
-        aria-label="Submit search"
-      >
-        Search
-      </button>
+      </div>
     </form>
   );
 };

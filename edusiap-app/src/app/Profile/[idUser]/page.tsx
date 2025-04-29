@@ -27,7 +27,7 @@ export default function Profile() {
       <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[97px]">
         <Header />
         
-        <div className="p-6 max-w-6xl mx-auto">
+        <div className="p-6 max-w-6xl mx-auto mt-30">
           {/* Profile Header */}
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold text-gray-800">My Profile</h1>
