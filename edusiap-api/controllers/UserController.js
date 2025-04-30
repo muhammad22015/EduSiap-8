@@ -51,11 +51,19 @@ const register = async (req,res) => {
         }
     
         const hashedPassword = await bcrypt.hash(password, 10);
-        await Prisma.user.create({
+        const user = await Prisma.user.create({
             data: {
                 email: email,
                 username: username,
                 password: hashedPassword
+            }
+        })
+
+        await Prisma.user_profile.create({
+            data: {
+                fullname: "",
+                phone: "",
+                user_id: user.user_id,
             }
         })
         

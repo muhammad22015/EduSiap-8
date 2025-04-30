@@ -18,14 +18,16 @@ model answers {
 }
 
 model history {
+  history_id Int      @id @default(autoincrement())
   user_id    Int
   video_id   Int
   watched_at DateTime @default(now()) @db.Timestamp(0)
   user       user     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Restrict, map: "history_user_id_foreign")
   video      video    @relation(fields: [video_id], references: [video_id], onDelete: Cascade, onUpdate: Restrict, map: "history_video_id_foreign")
 
-  @@id([user_id, video_id])
+  @@unique([user_id, video_id], map: "user_id_video_id_unique")
   @@index([video_id], map: "video_id")
+  @@index([user_id], map: "user_id")
 }
 
 model likes {
@@ -108,6 +110,7 @@ model video {
   title           String            @db.VarChar(255)
   description     String?           @db.Text
   category        video_category    @default(Other)
+  view_count      Int               @default(0)
   video_link      String            @db.VarChar(255)
   upload_date     DateTime          @default(now()) @db.Timestamp(0)
   history         history[]
