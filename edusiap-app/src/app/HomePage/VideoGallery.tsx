@@ -25,7 +25,7 @@ export const VideoGallery: React.FC<VideoGalleryProps> = ({
   return (
     <div className="flex min-h-screen bg-orange-100">
       <Sidebar />
-      <main className="ml-[97px] flex-1 px-20 py-0 max-md:px-5 max-md:py-0">
+      <main className="ml-[120px] flex-1 px-20 py-0 max-md:px-5 max-md:py-0">
         <Header initialSearch={searchQuery} />
         <VideoGrid searchQuery={searchQuery} />
       </main>

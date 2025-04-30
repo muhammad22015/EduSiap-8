@@ -16,18 +16,22 @@ export const SidebarIcon: React.FC<SidebarIconProps> = ({ name, svg }) => {
       router.push('/pdfReader');
     }
     if (name == 'Home') {
-      router.push('/HomePage')
+      router.push('/')
+    }
+    if (name == 'User') {
+      router.push('/Profile')
     }
   };
 
 
   return (
     <div
-      className="sidebar-icon my-2 cursor-pointer"
+      className="sidebar-icon cursor-pointer"
       title={name}
       onClick={handleClick}
     >
-      <div dangerouslySetInnerHTML={{ __html: svg }} />
+      <div dangerouslySetInnerHTML={{ __html: svg }} className='flex items-center justify-evenly'></div>
+      <span className='block relative -top-4 w-full text-center text-gray-700 font-bold text-lg'>{name}</span>
     </div>
   );
 };

@@ -34,7 +34,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <form 
       onSubmit={handleSearch}
-      className={`relative w-full transition-all duration-200 ${isFocused ? 'ring-2 ring-orange-500' : ''}`}
+      className={`relative w-full transition-all duration-200 ${isFocused ? 'ring-orange-500' : ''}`}
     >
       <div className="relative">
         <input
