@@ -45,12 +45,12 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
-          className="w-full h-14 pl-12 pr-14 text-black rounded-xl border-2 border-gray-300 focus:border-orange-500 focus:outline-none text-lg transition-all duration-200"
+          className="w-full h-14 pl-12 pr-14 bg-white text-black rounded-xl border-2 border-gray-300 focus:border-orange-500 focus:outline-none text-lg transition-all duration-200 max-sm:text-sm max-sm:h-10 max-sm:pl-8 max-sm:-translate-x-2"
           aria-label="Search input"
         />
         
         {/* Search icon */}
-        <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+        <div className="absolute left-4 top-1/2 transform -translate-y-1/2 max-sm:scale-75 max-sm:left-0">
           <svg 
             width="24" 
             height="24" 
@@ -81,7 +81,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-12 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors"
+            className="absolute right-24 top-1/2 transform -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 transition-colors max-sm:right-4"
             aria-label="Clear search"
           >
             <svg 
@@ -106,7 +106,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         {/* Search button */}
         <button
           type="submit"
-          className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-12 w-20 rounded-lg font-medium transition-colors duration-200 ${
+          className={`absolute right-1 top-1/2 transform -translate-y-1/2 h-12 w-20 rounded-lg font-medium transition-colors duration-200 max-sm:h-8 max-sm:text-sm max-sm:w-14 max-sm:right-10 max-sm:hidden ${
             searchTerm 
               ? 'bg-orange-500 text-white hover:bg-orange-600' 
               : 'bg-gray-200 text-gray-500 cursor-not-allowed'

@@ -15,12 +15,12 @@ export const VideoCard: React.FC<VideoCardProps> = ({ id, title, video_link }) =
         <iframe
           src={video_link} // URL video di video_link akan dimasukkan ke dalam iframe
           title={title}
-          className="w-full h-[180px] rounded-[30px] max-md:h-auto max-md:w-full"
+          className="w-full h-[220px] rounded-[30px] max-md:h-auto max-md:w-full"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
-        <h2 className="text-2xl leading-7 text-black max-sm:text-2xl">{title}</h2>
+        <h2 className="text-xl leading-7 text-black max-sm:text-lg lg:text-2xl xl:text-4xl">{title}</h2>
       </div>
     </Link>
   );

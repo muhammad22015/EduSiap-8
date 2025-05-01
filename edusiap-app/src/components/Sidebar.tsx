@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef }  from 'react';
 import { SidebarIcon } from './SidebarIcon';
 
 const sidebarIcons = [
@@ -10,14 +10,57 @@ const sidebarIcons = [
 ];
 
 export const Sidebar: React.FC = () => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  const toggleSidebar = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setIsExpanded(false);
+      }
+    };
+
+    if (isExpanded) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isExpanded]);
+
   return (
-    <nav className="flex flex-col items-center bg-orange-300 w-[120px] h-screen max-sm:w-[60px] fixed" aria-label="Main Navigation">
-      <button className="mb-20 mt-11" aria-label="Menu">
+    <nav 
+      ref={sidebarRef}
+      className={`flex flex-col items-center bg-orange-300 h-screen fixed
+        ${isExpanded ? 'w-[180px]' : 'w-[60px]'}
+        ${isExpanded ? 'max-sm:bg-orange-300' : 'max-sm:bg-transparent'}
+        sm:w-[120px] transition-all duration-300 ease-in-out z-51`} 
+      aria-label="Main Navigation"
+    >
+      <button 
+        className={`mb-20 mt-5 scale-50 rounded-full p-5 
+          ${isExpanded ? 'max-sm:bg-transparent' : 'max-sm:bg-white'}
+          ${isExpanded ? 'max-sm:border-none' : 'max-sm:border-4'}
+          ${isExpanded ? 'max-sm:border-none' : 'max-sm:border-gray-300'}
+        `} 
+        aria-label="Menu"
+        onClick={toggleSidebar}
+      >
         <svg id="121:1265" width="44" height="38" viewBox="0 0 44 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="menu-svg">
           <path d="M0 0V5.45194H43.6155V0H0ZM0 16.1923V21.6442H43.6155V16.1923H0ZM0 32.5481V38H43.6155V32.5481H0Z" fill="#454545"></path>
         </svg>
       </button>
-      <div className="flex flex-col items-center h-full justify-evenly">
+      
+      <div className={`flex flex-col items-center h-full justify-evenly 
+        ${isExpanded ? 'flex' : 'hidden sm:flex'}`}
+      >
         {sidebarIcons.map((icon, index) => (
           <SidebarIcon key={index} name={icon.name} svg={icon.svg} />
         ))}

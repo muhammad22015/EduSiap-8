@@ -47,9 +47,9 @@ export default function Home() {
     router.push('/HomePage');
   };
 
-  const handleAddVideo = () => {
-    router.push('/AddVideo');
-  };
+  // const handleAddVideo = () => {
+  //   router.push('/AddVideo');
+  // };
 
   return (
     <LoginForm
@@ -57,7 +57,7 @@ export default function Home() {
       onForgotPassword={handleForgotPassword}
       onSignUp={handleSignUp}
       onGoToGallery={handleGoToGallery}
-      onAddVideo={handleAddVideo}
+      // onAddVideo={handleAddVideo}
     />
   );
 }

@@ -19,7 +19,7 @@ const InputField: React.FC<InputFieldProps> = ({
 }) => {
   return (
     <div className="relative mb-5">
-      <label htmlFor={id} className="mb-1.5 text-sm text-black block">
+      <label htmlFor={id} className="mb-1.5 text-sm text-black block xl:text-xl">
         {label}
       </label>
       <div className="relative">
@@ -29,7 +29,7 @@ const InputField: React.FC<InputFieldProps> = ({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className="p-2.5 w-full text-xs rounded-xl border border-solid border-zinc-400 text-neutral-700"
+          className="p-2.5 w-full text-xs rounded-xl border border-solid border-zinc-400 text-neutral-700 xl:text-xl"
         />
       </div>
     </div>
