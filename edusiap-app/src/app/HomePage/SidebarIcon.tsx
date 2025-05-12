@@ -18,6 +18,12 @@ export const SidebarIcon: React.FC<SidebarIconProps> = ({ name, svg }) => {
     if (name == 'Home') {
       router.push('/HomePage')
     }
+    if (name == 'Playlist') {
+      router.push('/Playlist')
+    }
+    if (name == 'History') {
+      router.push('/History')
+    }
   };
 
   
