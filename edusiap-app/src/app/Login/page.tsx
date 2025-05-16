@@ -44,7 +44,7 @@ export default function Home() {
   };
 
   const handleGoToGallery = () => {
-    router.push('/HomePage');
+    router.push('/');
   };
 
   // const handleAddVideo = () => {

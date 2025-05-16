@@ -40,7 +40,7 @@ export default function WatchVideoPage() {
   return (
     <div className="flex min-h-screen bg-orange-100">
       <Sidebar />
-      <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[120px]">
+      <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[120px] mt-[120px] mb-[30px]">
         <Header />
         <div className="flex flex-col w-full items-center justify-center">
           {loading ? (
