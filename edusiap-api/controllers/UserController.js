@@ -21,7 +21,7 @@ const register = async (req,res) => {
         const existingUser = await Prisma.user.findUnique({ where: { email } });
         if (existingUser) {
             if (existingUser.is_verified) {
-                return res.status(409).json({ status: 'Email sudah terdaftar' });
+                return res.status(409).json({ status: "Bad Request", error: 'Email sudah terdaftar' });
             }
 
             const NOW = new Date();
@@ -29,7 +29,7 @@ const register = async (req,res) => {
             const HOUR = 60 * 60 * 1000;
 
             if (NOW - EMAIL_SENT < HOUR) {
-                return res.status(429).json({ status: 'Link verifikasi telah dikirim, cek Email anda' });
+                return res.status(429).json({ status: "Bad Request", error: 'Link verifikasi telah dikirim, cek Email anda' });
             }
 
             await Prisma.user.update({
@@ -47,7 +47,7 @@ const register = async (req,res) => {
     
         const existingUsername = await Prisma.user.findUnique({ where: { username } });
         if (existingUsername) {
-          return res.status(409).json({ status: 'Username sudah digunakan' });
+          return res.status(409).json({ status: "Bad Request", error: 'Username sudah digunakan' });
         }
     
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -106,18 +106,18 @@ const verify = async (req,res) => {
 
 const login = async (req,res) => {
     const { email, password } = req.body;
-    if(!email || !password) return res.status(400).json({status: "Email dan Password diperlukan!"});
+    if(!email || !password) return res.status(400).json({status: "Bad Request", error: "Email dan Password diperlukan!"});
 
     try {
         const user = await Prisma.user.findFirst({
             where: { email }
         });
-        if(!user) return res.status(401).json({status: "Email salah!"});
+        if(!user) return res.status(401).json({status: "Bad Request", error: "Email salah!"});
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if(!isMatch) return res.status(401).json({status: "Password salah!"});
+        if(!isMatch) return res.status(401).json({status: "Bad Request", error: "Password salah!"});
 
-        if(!user.is_verified) return res.status(401).json({status: "Verify Akun terlebih dahulu!"});
+        if(!user.is_verified) return res.status(401).json({status: "Bad Request", error: "Verify Akun terlebih dahulu!"});
 
         return res.status(200).json({status: "Login Berhasil"});
     } catch (err) {
