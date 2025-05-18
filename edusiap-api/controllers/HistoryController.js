@@ -10,7 +10,7 @@ const historyByUserId = async (req,res) => {
                 watched_at: 'desc'
             },
         })
-        if(!history) return res.status(404).json({status: "Tidak Ada History Video"});
+        if(!history) return res.status(404).json({status: "Bad Request", error: "Tidak Ada History Video"});
         
         return res.status(200).json({status: "Authorized", response: history})
     } catch(err) {
@@ -23,7 +23,7 @@ const watchVideo = async (req, res) => {
         const { user_id, video_id } = req.body;
   
         if (!user_id || !video_id) {
-            return res.status(400).json({ status: "Bad Request", message: "user_id and video_id tidak ditemukan" });
+            return res.status(400).json({ status: "Bad Request", error: "user_id dan video_id tidak ditemukan" });
         }
   
         await Prisma.$transaction([

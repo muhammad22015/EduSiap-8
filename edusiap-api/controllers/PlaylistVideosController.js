@@ -7,13 +7,25 @@ const playlistVideosById = async (req,res) => {
         const playlist_videos = await Prisma.playlist_videos.findMany({
             where: { playlist_id: parseInt(id)},
             include: {
-                video: true
+                playlist: {
+                    select: {
+                        title: true,
+                    }
+                },
+                video: {
+                    select: {
+                        thumbnail: true,
+                        title: true,
+                        view_count: true,
+                        upload_date: true,
+                    }
+                },
             },
             orderBy: {
                 position: 'asc'
             },
         })
-        if(!playlist_videos) return res.status(404).json({status: "Playlist Videos tidak ditemukan"});
+        if(playlist_videos.length === 0) return res.status(404).json({status: "Bad Request", error: "Playlist Videos tidak ditemukan"});
         
         return res.status(200).json({status: "Authorized", response: playlist_videos})
     } catch(err) {

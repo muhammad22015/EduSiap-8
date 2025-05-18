@@ -45,7 +45,7 @@ export const Sidebar: React.FC = () => {
       aria-label="Main Navigation"
     >
       <button 
-        className={`mb-20 mt-5 scale-50 rounded-full p-5 
+        className={`mb-20 mt-5 scale-50 rounded-full p-6 
           ${isExpanded ? 'max-sm:bg-transparent' : 'max-sm:bg-white'}
           ${isExpanded ? 'max-sm:border-none' : 'max-sm:border-4'}
           ${isExpanded ? 'max-sm:border-none' : 'max-sm:border-gray-300'}
@@ -53,7 +53,7 @@ export const Sidebar: React.FC = () => {
         aria-label="Menu"
         onClick={toggleSidebar}
       >
-        <svg id="121:1265" width="44" height="38" viewBox="0 0 44 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="menu-svg">
+        <svg id="121:1265" width="44" height="38" viewBox="0 0 44 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="menu-svg scale-125">
           <path d="M0 0V5.45194H43.6155V0H0ZM0 16.1923V21.6442H43.6155V16.1923H0ZM0 32.5481V38H43.6155V32.5481H0Z" fill="#454545"></path>
         </svg>
       </button>

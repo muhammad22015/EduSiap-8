@@ -16,9 +16,8 @@ const quizbyId = async (req,res) => {
                     }
                 }
           }
-        });
-    
-        if (!quiz) return res.status(404).json({ status: "Tidak ada Quiz" });
+        });   
+        if (!quiz) return res.status(404).json({ status: "Bad Request", error: "Tidak ada Quiz" });
     
         return res.status(200).json({status: "Authorized", response: quiz})
       } catch (err) {

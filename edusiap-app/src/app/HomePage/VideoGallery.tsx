@@ -6,18 +6,13 @@ import { Header } from '@/components/Header';
 import { VideoGrid } from './VideoGrid';
 import { useSearchParams } from 'next/navigation';
 
-interface VideoGalleryProps {
-  initialSearchQuery?: string;
-}
+interface VideoGalleryProps {} // atau hapus saja prop-nya
 
-export const VideoGallery: React.FC<VideoGalleryProps> = ({ 
-  initialSearchQuery = '' 
-}) => {
+export const VideoGallery: React.FC = () => {
   const searchParams = useSearchParams();
   const urlQuery = searchParams.get('q') || '';
   const [searchQuery, setSearchQuery] = useState(urlQuery);
 
-  // Sync with URL changes
   useEffect(() => {
     setSearchQuery(urlQuery);
   }, [urlQuery]);
