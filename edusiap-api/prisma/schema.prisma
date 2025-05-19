@@ -135,6 +135,7 @@ model user_profile {
   profile_id Int    @id @default(autoincrement())
   fullname   String @db.VarChar(255)
   phone      String @db.VarChar(255)
+  avatar     String @db.VarChar(255) @default("https://avatar.iran.liara.run/public/31")
   user_id    Int    @unique(map: "user_id_unique")
   user       user   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: Restrict, map: "user_id_foreign")
 }

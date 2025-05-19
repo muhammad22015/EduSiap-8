@@ -1,25 +1,164 @@
 "use client"
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
+
+interface UserData {
+  username?: string;
+  fullname: string;
+  email?: string;
+  phone: string;
+  avatar?: string;
+  joinedDate?: string;
+  user_id?: number;
+}
+
+const availableAvatars = [
+  'https://avatar.iran.liara.run/public/31',
+  'https://avatar.iran.liara.run/public/14',
+  'https://avatar.iran.liara.run/public/47',
+  'https://avatar.iran.liara.run/public/17',
+  'https://avatar.iran.liara.run/public/11',
+  'https://avatar.iran.liara.run/public/12',
+  'https://avatar.iran.liara.run/public/18',
+  'https://avatar.iran.liara.run/public/50',
+  'https://avatar.iran.liara.run/public/55',
+  'https://avatar.iran.liara.run/public/71',
+  'https://avatar.iran.liara.run/public/66',
+  'https://avatar.iran.liara.run/public/64',
+  'https://avatar.iran.liara.run/public/59',
+  'https://avatar.iran.liara.run/public/60',
+  'https://avatar.iran.liara.run/public/80',
+  'https://avatar.iran.liara.run/public/77',
+];
 
 export default function Profile() {
   const router = useRouter();
+  const params = useParams();
+  const idUser = params.idUser as string;
+  
   const [activeTab, setActiveTab] = useState<'view' | 'edit'>('view');
-  const [userData, setUserData] = useState({
-    username: 'johndoe',
-    fullName: 'John Doe',
-    email: 'john@example.com',
-    phoneNumber: '+1 (555) 123-4567',
-    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    joinedDate: 'January 2023'
+  const [userData, setUserData] = useState<UserData>({
+    fullname: '',
+    phone: '',
+    email: '',
+    username: '',
+    avatar: 'https://avatar.iran.liara.run/public/31',
+    joinedDate: ''
   });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const handleSave = (updatedData: typeof userData) => {
-    setUserData(updatedData);
-    setActiveTab('view');
+  // Fetch user profile data
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user-profile/?id=${idUser}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile data');
+        }
+        
+        const data = await response.json();
+        if (data.status === "Authorized" && data.response) {
+          setUserData({
+            fullname: data.response.fullname || '',
+            phone: data.response.phone || '',
+            user_id: data.response.user_id,
+            email: data.response.user?.email || '',
+            username: data.response.user?.username || '',
+            avatar: data.response.avatar || 'https://avatar.iran.liara.run/public/31', // Ensure avatar has a default
+            joinedDate: data.response.user?.created_at 
+              ? new Date(data.response.user.created_at).toLocaleDateString('en-US', { 
+                  month: 'long', 
+                  year: 'numeric' 
+                })
+              : 'Unknown date'
+          });
+        }
+      } catch (err) {
+        // ... error handling ...
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [idUser]);
+
+  const handleSave = async (updatedData: UserData) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user-profile/update?id=${idUser}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullname: updatedData.fullname,
+          phone: updatedData.phone,
+          avatar: updatedData.avatar // Include the selected avatar URL
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      const result = await response.json();
+      if (result.status === "Update Berhasil") {
+        setUserData(prev => ({
+          ...prev,
+          fullname: updatedData.fullname,
+          phone: updatedData.phone,
+          avatar: updatedData.avatar
+        }));
+        setActiveTab('view');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update profile');
+      console.error('Error updating profile:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen bg-orange-100">
+        <Sidebar />
+        <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[120px]">
+          <Header />
+          <div className="p-6 max-w-6xl mx-auto mt-30 flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen bg-orange-100">
+        <Sidebar />
+        <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[120px]">
+          <Header />
+          <div className="p-6 max-w-6xl mx-auto mt-30 bg-white rounded-xl shadow-md">
+            <div className="text-red-500 text-center">{error}</div>
+            <button 
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+            >
+              Retry
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-orange-100">
@@ -66,21 +205,24 @@ export default function Profile() {
 }
 
 // Profile View Component
-function ProfileView({ userData }: { userData: any }) {
+function ProfileView({ userData }: { userData: UserData }) {
+  const avatarUrl = userData.avatar || 'https://avatar.iran.liara.run/public/31';
   return (
     <div className="p-8">
       <div className="flex flex-col md:flex-row gap-8">
         {/* Left Column - Avatar */}
         <div className="w-full md:w-1/3 flex flex-col items-center">
           <div className="w-40 h-40 rounded-full overflow-hidden mb-4 border-4 border-orange-200">
-            <img 
-              src={userData.avatar} 
-              alt="Profile" 
-              className="w-full h-full object-cover"
-            />
+            {avatarUrl && (
+              <img 
+                src={avatarUrl} 
+                alt="Profile" 
+                className="w-full h-full object-cover"
+              />
+            )}
           </div>
-          <h2 className="text-2xl font-bold text-center text-gray-800">{userData.fullName}</h2>
-          <p className="text-gray-500 text-center">{userData.username}</p>
+          <h2 className="text-2xl font-bold text-center text-gray-800">{userData.fullname}</h2>
+          <p className="text-gray-500 text-center">@{userData.username}</p>
           <p className="text-gray-500 text-center text-sm mt-2">Member since {userData.joinedDate}</p>
         </div>
 
@@ -94,47 +236,60 @@ function ProfileView({ userData }: { userData: any }) {
                 <p className="text-gray-800 font-medium">@{userData.username}</p>
               </div>
               <div>
-                <p className="text-gray-600 text-sm">Full Name</p>
-                <p className="text-gray-800 font-medium">{userData.fullName}</p>
-              </div>
-              <div>
                 <p className="text-gray-600 text-sm">Email</p>
                 <p className="text-gray-800 font-medium">{userData.email}</p>
               </div>
               <div>
+                <p className="text-gray-600 text-sm">Full Name</p>
+                <p className="text-gray-800 font-medium">{userData.fullname || 'Not set'}</p>
+              </div>
+              <div>
                 <p className="text-gray-600 text-sm">Phone Number</p>
-                <p className="text-gray-800 font-medium">{userData.phoneNumber}</p>
+                <p className="text-gray-800 font-medium">{userData.phone || 'Not set'}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-orange-50 p-6 rounded-lg">
+          {/* <div className="bg-orange-50 p-6 rounded-lg">
             <h3 className="text-xl font-semibold mb-4 text-gray-800">Account Settings</h3>
             <button className="text-orange-600 hover:underline mr-4">Change Password</button>
             <button className="text-orange-600 hover:underline">Privacy Settings</button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
   );
 }
 
-// Profile Edit Component
+// Profile Edit Component (unchanged)
 function ProfileEdit({ userData, onSave, onCancel }: { 
-  userData: any, 
-  onSave: (data: any) => void, 
+  userData: UserData, 
+  onSave: (data: UserData) => void, 
   onCancel: () => void 
 }) {
-  const [formData, setFormData] = useState(userData);
+  const [formData, setFormData] = useState<UserData>({
+    ...userData,
+    avatar: userData.avatar || 'https://avatar.iran.liara.run/public/31'
+  });
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleAvatarSelect = (avatarUrl: string) => {
+    setFormData({ ...formData, avatar: avatarUrl });
+    setShowAvatarPicker(false);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    onSave({
+      ...formData,
+      fullname: formData.fullname,
+      phone: formData.phone
+    });
   };
 
   return (
@@ -143,58 +298,75 @@ function ProfileEdit({ userData, onSave, onCancel }: {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Left Column - Avatar */}
           <div className="w-full md:w-1/3 flex flex-col items-center">
-            <div className="w-40 h-40 rounded-full overflow-hidden mb-4 border-4 border-orange-200">
-              <img 
-                src={formData.avatar} 
-                alt="Profile" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <input
-              type="text"
-              name="avatar"
-              value={formData.avatar}
-              onChange={handleChange}
-              className="w-full p-2 border rounded text-black text-sm"
-              placeholder="Image URL"
+            <div className="w-40 h-40 rounded-full overflow-hidden mb-4 border-4 border-orange-200 relative group">
+            <img 
+              src={formData.avatar} 
+              alt="Profile" 
+              className="w-full h-full object-cover"
             />
+            <button
+              type="button"
+              onClick={() => setShowAvatarPicker(!showAvatarPicker)}
+              className="absolute inset-0 w-full h-full bg-black/70 bg-opacity-0 text-white opacity-0 
+                        group-hover:bg-opacity-50 group-hover:opacity-100 transition-all duration-200
+                        flex items-center justify-center"
+            >
+              <span className="bg-black px-3 py-1 rounded-full text-sm">
+                Change Avatar
+              </span>
+            </button>
+          </div>
+            
+            {showAvatarPicker && (
+              <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg text-orange-500 font-bold">Choose Your Avatar</h3>
+                    <button 
+                      onClick={() => setShowAvatarPicker(false)}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                  
+                  <div className="grid grid-cols-5 gap-4">
+                    {availableAvatars.map((avatar) => (
+                      <div 
+                        key={avatar}
+                        onClick={() => handleAvatarSelect(avatar)}
+                        className={`cursor-pointer p-1 rounded-full transition-all ${
+                          formData.avatar === avatar 
+                            ? 'ring-2 ring-orange-500 transform scale-105' 
+                            : 'hover:ring-1 hover:ring-gray-300'
+                        }`}
+                      >
+                        <img 
+                          src={avatar} 
+                          alt="Avatar option" 
+                          className="w-full h-auto rounded-full aspect-square object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Right Column - Form Fields */}
+          {/* Right Column - Form Fields (unchanged) */}
           <div className="w-full md:w-2/3 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-gray-700 mb-1">Username</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-black"
-                  required
-                />
-              </div>
-
               <div>
                 <label className="block text-gray-700 mb-1">Full Name</label>
                 <input
                   type="text"
-                  name="fullName"
-                  value={formData.fullName}
+                  name="fullname"
+                  value={formData.fullname}
                   onChange={handleChange}
                   className="w-full p-3 border rounded-lg text-black"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-black" 
                   required
                 />
               </div>
@@ -203,10 +375,12 @@ function ProfileEdit({ userData, onSave, onCancel }: {
                 <label className="block text-gray-700 mb-1">Phone Number</label>
                 <input
                   type="tel"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
+                  name="phone"
+                  value={formData.phone}
                   onChange={handleChange}
                   className="w-full p-3 border rounded-lg text-black"
+                  pattern="^0\d{9,12}$"
+                  title="Phone number should start with 0 and be 10-13 digits"
                 />
               </div>
             </div>
