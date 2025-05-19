@@ -7,6 +7,15 @@ const userProfileByUserId = async (req,res) => {
     try {
         const user_profile = await Prisma.user_profile.findUnique({
             where: { user_id: parseInt(id)},
+            include: { 
+                user: {
+                    select: {
+                        email: true,
+                        username: true,
+                        created_at: true,
+                    }
+                },
+            },
         })
         if(!user_profile) return res.status(404).json({status: "User tidak ditemukan"});
         
