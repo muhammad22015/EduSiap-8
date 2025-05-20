@@ -16,6 +16,7 @@ interface Video {
 interface PlaylistVideo {
   video: Video;
   position: number;
+  video_id: number;
 }
 
 const PlaylistDetailPage = () => {
@@ -25,13 +26,23 @@ const PlaylistDetailPage = () => {
   const [loading, setLoading] = useState(true);
 
   // Fungsi untuk mengubah URL YouTube menjadi format embed
-  const getEmbedUrl = (url: string) => {
+  const getEmbedUrl = (url: string | undefined | null) => {
+    if (!url) return ''; // Return empty string if url is undefined or null
+    
     const regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:watch\?v=|embed\/)([^&?/]+)/;
     const match = url.match(regex);
     if (match && match[1]) {
       return `https://www.youtube.com/embed/${match[1]}`;
     }
-    return url; // Jika bukan URL YouTube, kembalikan url yang asli
+    
+    // Handle youtu.be short URLs
+    const shortRegex = /(?:https?:\/\/)?(?:www\.)?youtu\.be\/([^&?/]+)/;
+    const shortMatch = url.match(shortRegex);
+    if (shortMatch && shortMatch[1]) {
+      return `https://www.youtube.com/embed/${shortMatch[1]}`;
+    }
+    
+    return url; // Return original URL if it doesn't match YouTube patterns
   };
 
   useEffect(() => {
@@ -68,30 +79,37 @@ const PlaylistDetailPage = () => {
             <p className="text-center text-gray-500">Tidak ada video dalam playlist ini.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-5xl">
-              {videos.map((item) => (
-                <div
-                  key={item.video.video_id}
-                  onClick={() => router.push(`/WatchVideo/${item.video.video_id}`)}
-                  className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
-                >
-                  <div className="w-full mb-4">
-                    {/* Menampilkan iframe video */}
-                    <div className="aspect-video">
-                      <iframe
-                        src={getEmbedUrl(item.video.video_link)} // Menggunakan fungsi getEmbedUrl
-                        title={item.video.title}
-                        frameBorder="0"
-                        allowFullScreen
-                        className="w-full h-56 rounded-md pointer-events-none"
-                      />
+              {videos.map((item) => {
+                const embedUrl = getEmbedUrl(item.video.video_link);
+                return (
+                  <div
+                    key={`${item.video_id}-${item.position}`} // More unique key combining video_id and position
+                    onClick={() => router.push(`/WatchVideo/${item.video_id}`)}
+                    className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
+                  >
+                    <div className="w-full mb-4">
+                      {embedUrl ? (
+                        <div className="aspect-video">
+                          <iframe
+                            src={embedUrl}
+                            title={item.video.title}
+                            frameBorder="0"
+                            allowFullScreen
+                            className="w-full h-56 rounded-md pointer-events-none"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-56 bg-gray-200 rounded-md flex items-center justify-center">
+                          <span>Video unavailable</span>
+                        </div>
+                      )}
                     </div>
+                    <h2 className="text-lg font-semibold text-lime-900 mb-2 text-center">
+                      {item.video.title}
+                    </h2>
                   </div>
-                  {/* Menampilkan judul video */}
-                  <h2 className="text-lg font-semibold text-lime-900 mb-2 text-center">
-                    {item.video.title}
-                  </h2>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

@@ -46,7 +46,7 @@ const PdfReaderPage = () => {
               >
                 {/* Gunakan path relatif untuk gambar */}
                 <img
-                  src="https://i.imgur.com/iaO1bri.png"
+                  src="https://i.imgur.com/YnYR3G6.png"
                   alt={book.title}
                   className="w-full h-48 object-contain rounded-md mb-4" // Gunakan object-contain
                 />
