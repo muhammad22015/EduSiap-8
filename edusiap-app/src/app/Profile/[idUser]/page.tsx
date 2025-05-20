@@ -163,23 +163,23 @@ export default function Profile() {
   return (
     <div className="flex min-h-screen bg-orange-100">
       <Sidebar />
-      <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[120px]">
+      <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[120px] max-sm:ml-0 max-sm:px-3">
         <Header />
         
-        <div className="p-6 max-w-6xl mx-auto mt-30">
+        <div className="p-6 max-w-6xl mx-auto mt-30 max-sm:mt-25">
           {/* Profile Header */}
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">My Profile</h1>
+          <div className="flex justify-between items-center mb-8 max-sm:mb-4">
+            <h1 className="text-3xl font-bold text-gray-800 max-sm:text-lg max-sm:hidden">My Profile</h1>
             <div className="flex space-x-4">
               <button 
                 onClick={() => setActiveTab('view')}
-                className={`px-4 py-2 rounded-lg ${activeTab === 'view' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
+                className={`px-4 py-2 rounded-lg max-sm:text-sm max-sm:px-2 max-sm:py-1 ${activeTab === 'view' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
               >
                 View Profile
               </button>
               <button 
                 onClick={() => setActiveTab('edit')}
-                className={`px-4 py-2 rounded-lg ${activeTab === 'edit' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
+                className={`px-4 py-2 rounded-lg max-sm:text-sm max-sm:px-2 max-sm:py-1 ${activeTab === 'edit' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
               >
                 Edit Profile
               </button>
@@ -208,11 +208,11 @@ export default function Profile() {
 function ProfileView({ userData }: { userData: UserData }) {
   const avatarUrl = userData.avatar || 'https://avatar.iran.liara.run/public/31';
   return (
-    <div className="p-8">
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="p-8 max-sm:p-4">
+      <div className="flex flex-col md:flex-row gap-8 max-sm:gap-4">
         {/* Left Column - Avatar */}
         <div className="w-full md:w-1/3 flex flex-col items-center">
-          <div className="w-40 h-40 rounded-full overflow-hidden mb-4 border-4 border-orange-200">
+          <div className="w-40 h-40 rounded-full overflow-hidden mb-4 border-4 border-orange-200 max-sm:w-25 max-sm:h-25">
             {avatarUrl && (
               <img 
                 src={avatarUrl} 
@@ -221,31 +221,31 @@ function ProfileView({ userData }: { userData: UserData }) {
               />
             )}
           </div>
-          <h2 className="text-2xl font-bold text-center text-gray-800">{userData.fullname}</h2>
-          <p className="text-gray-500 text-center">@{userData.username}</p>
+          <h2 className="text-2xl font-bold text-center text-gray-800 max-sm:text-xl">{userData.fullname}</h2>
+          <p className="text-gray-500 text-center max-sm:text-md">@{userData.username}</p>
           <p className="text-gray-500 text-center text-sm mt-2">Member since {userData.joinedDate}</p>
         </div>
 
         {/* Right Column - Details */}
         <div className="w-full md:w-2/3 space-y-6">
           <div className="bg-orange-50 p-6 rounded-lg">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800">Personal Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 max-sm:text-xl">Personal Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-sm:text-md">
+              <div className='w-full flex flex-col'>
                 <p className="text-gray-600 text-sm">Username</p>
-                <p className="text-gray-800 font-medium">@{userData.username}</p>
+                <p className="text-gray-800 font-medium break-words">@{userData.username}</p>
               </div>
-              <div>
+              <div className='w-full flex flex-col'>
                 <p className="text-gray-600 text-sm">Email</p>
-                <p className="text-gray-800 font-medium">{userData.email}</p>
+                <p className="text-gray-800 font-medium break-words">{userData.email}</p>
               </div>
-              <div>
+              <div className='w-full flex flex-col'>
                 <p className="text-gray-600 text-sm">Full Name</p>
-                <p className="text-gray-800 font-medium">{userData.fullname || 'Not set'}</p>
+                <p className="text-gray-800 font-medium break-words">{userData.fullname || 'Not set'}</p>
               </div>
-              <div>
+              <div className='w-full flex flex-col'>
                 <p className="text-gray-600 text-sm">Phone Number</p>
-                <p className="text-gray-800 font-medium">{userData.phone || 'Not set'}</p>
+                <p className="text-gray-800 font-medium break-words">{userData.phone || 'Not set'}</p>
               </div>
             </div>
           </div>
@@ -293,12 +293,12 @@ function ProfileEdit({ userData, onSave, onCancel }: {
   };
 
   return (
-    <div className="p-8">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex flex-col md:flex-row gap-8">
+    <div className="p-8 max-sm:p-4">
+      <form onSubmit={handleSubmit} className="space-y-6 max-sm:p-0">
+        <div className="flex flex-col md:flex-row gap-8 max-sm:gap-4">
           {/* Left Column - Avatar */}
           <div className="w-full md:w-1/3 flex flex-col items-center">
-            <div className="w-40 h-40 rounded-full overflow-hidden mb-4 border-4 border-orange-200 relative group">
+            <div className="w-40 h-40 rounded-full overflow-hidden mb-4 border-4 border-orange-200 relative group max-sm:w-25 max-sm:h-25">
             <img 
               src={formData.avatar} 
               alt="Profile" 
@@ -318,10 +318,10 @@ function ProfileEdit({ userData, onSave, onCancel }: {
           </div>
             
             {showAvatarPicker && (
-              <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg">
+              <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-50 max-sm:w-2/3 max-sm:m-auto">
+                <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-sm:border-1 max-sm:border-black">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg text-orange-500 font-bold">Choose Your Avatar</h3>
+                    <h3 className="text-lg text-orange-500 font-bold max-sm:text-md">Choose Your Avatar</h3>
                     <button 
                       onClick={() => setShowAvatarPicker(false)}
                       className="text-gray-500 hover:text-gray-700"
@@ -332,7 +332,7 @@ function ProfileEdit({ userData, onSave, onCancel }: {
                     </button>
                   </div>
                   
-                  <div className="grid grid-cols-5 gap-4">
+                  <div className="grid grid-cols-5 gap-4 max-sm:grid-cols-3">
                     {availableAvatars.map((avatar) => (
                       <div 
                         key={avatar}
@@ -360,25 +360,25 @@ function ProfileEdit({ userData, onSave, onCancel }: {
           <div className="w-full md:w-2/3 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-700 mb-1">Full Name</label>
+                <label className="block text-gray-700 mb-1 max-sm:text-md">Full Name</label>
                 <input
                   type="text"
                   name="fullname"
                   value={formData.fullname}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-black"
+                  className="w-full p-3 border rounded-lg text-black max-sm:text-sm max-sm:p-2"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 mb-1">Phone Number</label>
+                <label className="block text-gray-700 mb-1 max-sm:text-md">Phone Number</label>
                 <input
                   type="tel"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded-lg text-black"
+                  className="w-full p-3 border rounded-lg text-black max-sm:text-sm max-sm:p-2"
                   pattern="^0\d{9,12}$"
                   title="Phone number should start with 0 and be 10-13 digits"
                 />
@@ -389,13 +389,13 @@ function ProfileEdit({ userData, onSave, onCancel }: {
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-6 py-2 border border-black rounded-lg text-black hover:bg-gray-50"
+                className="px-6 py-2 border border-black rounded-lg max-sm:text-sm max-sm:px3 max-sm:py-1 text-black hover:bg-gray-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                className="px-6 py-2 bg-orange-500 text-white rounded-lg max-sm:text-sm max-sm:px3 max-sm:py-1 hover:bg-orange-600"
               >
                 Save Changes
               </button>
