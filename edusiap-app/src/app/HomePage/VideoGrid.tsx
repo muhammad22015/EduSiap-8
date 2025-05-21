@@ -50,7 +50,7 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ searchQuery }) => {
           <p className="text-gray-600 text-lg">Memuat video...</p>
         </div>
       ) : (
-        <div className="grid gap-12 grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
+        <div className="grid gap-12 grid-cols-2 max-md:grid-cols-1 xl:grid-cols-3">
           {filteredVideos.length > 0 ? (
             filteredVideos.map((video) => (
               <VideoCard

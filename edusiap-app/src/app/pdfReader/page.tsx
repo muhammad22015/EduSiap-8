@@ -29,7 +29,7 @@ const PdfReaderPage = () => {
   return (
     <div className="flex min-h-screen bg-orange-100">
       <Sidebar />
-      <main className="flex-1 ml-[97px]">
+      <main className="flex-1 ml-[120px]">
         <Header />
         <div className="flex flex-col items-center w-full px-4 py-10">
           <h1 className="text-4xl font-bold mb-8 text-black text-center">
@@ -46,7 +46,7 @@ const PdfReaderPage = () => {
               >
                 {/* Gunakan path relatif untuk gambar */}
                 <img
-                  src={`/cover_sb1.png`} // Path relatif ke folder public
+                  src="https://i.imgur.com/iaO1bri.png"
                   alt={book.title}
                   className="w-full h-48 object-contain rounded-md mb-4" // Gunakan object-contain
                 />

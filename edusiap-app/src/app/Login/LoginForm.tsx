@@ -8,7 +8,7 @@ type LoginFormProps = {
   onForgotPassword: () => void;
   onSignUp: () => void;
   onGoToGallery: () => void;
-  onAddVideo: () => void;
+  // onAddVideo: () => void;
 };
 
 const LoginForm: React.FC<LoginFormProps> = ({
@@ -16,7 +16,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   onForgotPassword,
   onSignUp,
   onGoToGallery,
-  onAddVideo,
+  // onAddVideo,
 }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -45,13 +45,13 @@ const LoginForm: React.FC<LoginFormProps> = ({
         alt="Login Background"
         className="object-cover absolute inset-0 w-full h-full z-0"
       />
-      <div className="relative z-10 p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-lg backdrop-blur-sm max-md:max-w-[400px] max-sm:p-5 max-sm:rounded-3xl">
+      <div className="relative z-10 p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-lg backdrop-blur-sm max-md:max-w-[400px] max-sm:w-80 max-sm:p-4 max-sm:rounded-3xl">
         <div className="mx-auto w-full max-w-[404px]">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <h2 className="text-2xl font-bold text-center text-black">Welcome back!</h2>
+            <h2 className="text-2xl font-bold text-center text-black max-sm:text-xl xl:text-3xl">Welcome back!</h2>
 
             <div>
-              <label htmlFor="email" className="block mb-1 font-medium text-black">
+              <label htmlFor="email" className="block mb-1 font-medium text-black xl:text-lg ">
                 Email address
               </label>
               <input
@@ -59,13 +59,13 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-2 border border-black rounded text-black"
+                className="w-full p-2 border border-black rounded text-black xl:text-lg "
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block mb-1 font-medium text-black">
+              <label htmlFor="password" className="block mb-1 font-medium text-black xl:text-lg">
                 Password
               </label>
               <input
@@ -73,7 +73,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-2 border border-black rounded text-black"
+                className="w-full p-2 border border-black rounded text-black xl:text-lg"
                 required
               />
             </div>
@@ -81,19 +81,19 @@ const LoginForm: React.FC<LoginFormProps> = ({
             {errorMessage && <div className="text-red-600 text-sm">{errorMessage}</div>}
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center text-black text-sm">
+              <label className="flex items-center text-black text-sm xl:text-lg">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={() => setRememberMe(!rememberMe)}
-                  className="mr-2"
+                  className="mr-2 h-5 w-5"
                 />
                 Remember for 30 days
               </label>
               <button
                 type="button"
                 onClick={onForgotPassword}
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-blue-600 hover:underline xl:text-lg"
               >
                 Forgot password
               </button>
@@ -101,7 +101,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
             <button
               type="submit"
-              className="p-2.5 mb-5 w-full text-sm font-bold text-white bg-lime-900 rounded-xl cursor-pointer"
+              className="p-2.5 mb-5 w-full text-sm font-bold text-white bg-lime-900 rounded-xl cursor-pointer xl:text-xl"
             >
               Login
             </button>
@@ -109,10 +109,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
           <div className="flex gap-6 justify-between mb-5 max-sm:flex-col max-sm:gap-2.5">
             <SocialButton icon="google" text="Sign in with Google" />
-            <SocialButton icon="apple" text="Sign in with Apple" />
+            {/* <SocialButton icon="apple" text="Sign in with Apple" /> */}
           </div>
 
-          <p className="text-center text-sm text-black">
+          <p className="text-center text-sm text-black xl:text-lg">
             Don’t have an account?{' '}
             <button
               type="button"
@@ -123,7 +123,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             </button>
           </p>
 
-          <p className="text-center text-sm text-black mt-2">
+          {/* <p className="text-center text-sm text-black mt-2">
             ➕{' '}
             <button
               type="button"
@@ -132,7 +132,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             >
               Add New Video
             </button>
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

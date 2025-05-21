@@ -17,7 +17,7 @@ const bookbyId = async (req,res) => {
         const storybook = await Prisma.story_book.findUnique({
             where: { book_id: parseInt(id)}
         })
-        if(!storybook) return res.status(404).json({status: "Buku Tidak Ditemukan"});
+        if(!storybook) return res.status(404).json({status: "Bad Request", error: "Buku Tidak Ditemukan"});
         
         return res.status(200).json({status: "Authorized", response: storybook})
     } catch(err) {

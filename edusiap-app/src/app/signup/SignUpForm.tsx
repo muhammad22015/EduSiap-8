@@ -17,7 +17,7 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
   const [success, setSuccess] = useState('');
 
   const handleLoginRedirect = () => {
-    router.push('/');
+    router.push('/login');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -60,8 +60,8 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
     />
       <div className="relative z-10 p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-lg backdrop-blur-sm max-md:max-w-[400px] max-sm:p-5 max-sm:rounded-3xl">
       <div className="mx-auto w-full max-w-[404px]">
-          <h1 className="mb-2.5 text-3xl text-black">Welcome!</h1>
-          <p className="mb-4 text-base text-black">Please Create Your Account!</p>
+          <h1 className="mb-2.5 text-3xl font-bold text-black xl:text-4xl">Welcome!</h1>
+          <p className="mb-4 text-base text-black xl:text-xl">Please Create Your Account!</p>
 
           {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
           {success && <p className="text-green-700 text-sm mb-4">{success}</p>}
@@ -94,7 +94,7 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
               />
               <button
                 type="button"
-                className="absolute top-0 right-0 text-xs text-blue-900 cursor-pointer"
+                className="absolute top-0 right-0 text-xs text-blue-900 cursor-pointer xl:text-lg"
               >
                 forgot password
               </button>
@@ -104,16 +104,16 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
               <input
                 type="checkbox"
                 id="remember"
-                className="rounded-sm border border-black border-solid h-[9px] w-[9px]"
+                className="rounded-sm border border-black border-solid h-[9px] w-[9px] xl:w-4 xl:h-4"
               />
-              <label htmlFor="remember" className="text-xs text-black">
+              <label htmlFor="remember" className="text-xs text-black xl:text-lg">
                 Remember for 30 days
               </label>
             </div>
 
             <button
               type="submit"
-              className="p-2.5 mb-5 w-full text-sm font-bold text-white bg-lime-900 rounded-xl cursor-pointer border-[none]"
+              className="p-2.5 mb-5 w-full text-sm font-bold text-white bg-lime-900 rounded-xl cursor-pointer border-[none] xl:text-xl"
             >
               Sign Up
             </button>
@@ -121,10 +121,10 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
 
           <div className="flex gap-6 justify-between mb-5 max-sm:flex-col max-sm:gap-2.5">
             <SocialButton icon="google" text="Sign in with Google" />
-            <SocialButton icon="apple" text="Sign in with Apple" />
+            {/* <SocialButton icon="apple" text="Sign in with Apple" /> */}
           </div>
 
-          <div className="text-sm text-center text-black">
+          <div className="text-sm text-center text-black xl:text-lg">
             <span>Already have an account? </span>
             <button
               type="button"

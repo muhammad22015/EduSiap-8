@@ -24,7 +24,7 @@ export default function Profile() {
   return (
     <div className="flex min-h-screen bg-orange-100">
       <Sidebar />
-      <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[97px]">
+      <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[120px]">
         <Header />
         
         <div className="p-6 max-w-6xl mx-auto mt-30">

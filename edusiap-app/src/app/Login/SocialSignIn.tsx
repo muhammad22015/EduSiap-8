@@ -33,7 +33,7 @@ const SocialSignIn: React.FC<SocialSignInProps> = ({ icon, text }) => {
   return (
     <button className="flex gap-2.5 items-center px-5 py-1 text-xs text-black rounded-xl border border-solid cursor-pointer border-zinc-300 max-sm:justify-center">
       <span aria-hidden="true">{iconSvg}</span>
-      <span>{text}</span>
+      <span className='xl:text-lg'>{text}</span>
     </button>
   );
 };
