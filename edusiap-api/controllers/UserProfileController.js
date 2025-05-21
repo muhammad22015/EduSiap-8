@@ -7,10 +7,25 @@ const userProfileByUserId = async (req,res) => {
     try {
         const user_profile = await Prisma.user_profile.findUnique({
             where: { user_id: parseInt(id)},
+            include: { 
+                user: {
+                    select: {
+                        email: true,
+                        username: true,
+                        created_at: true,
+                    }
+                },
+            },
         })
         if(!user_profile) return res.status(404).json({status: "User tidak ditemukan"});
         
-        return res.status(200).json({status: "Authorized", response: user_profile})
+        return res.status(200).json({
+            status: "Authorized", 
+            response: {
+                ...user_profile,
+                avatar: user_profile.avatar || 'https://avatar.iran.liara.run/public/31'
+            }
+        })
     } catch(err) {
         return res.status(500).json({status: "Server Error", error: err.message});
     }
@@ -20,6 +35,7 @@ const updateUserProfileByUserId = async (req,res) => {
     const schema = Joi.object({
         fullname: Joi.string().allow(null, '').optional(),
         phone: Joi.string().pattern(/^0\d{9,12}$/).allow(null, '').optional(),
+        avatar: Joi.string().uri().optional()
     })
 
     const { error, value } = schema.validate(req.body);
