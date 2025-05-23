@@ -12,16 +12,16 @@ export const SidebarIcon: React.FC<SidebarIconProps> = ({ name, svg }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    if (name === 'Story Books') {
+    if (name === 'Buku Cerita') {
       router.push('/pdfReader');
     }
-    if (name == 'Home') {
+    if (name == 'Beranda') {
       router.push('/')
     }
     if (name == 'User') {
       router.push('/Profile')
     }
-    if (name == 'Playlist') {
+    if (name == 'Daftar Putar') {
       router.push('/Playlist')
     }
     if (name == 'History') {

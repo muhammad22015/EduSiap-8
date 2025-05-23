@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import InputField from './InputField';
 import SocialButton from './SocialButton';
@@ -15,10 +15,17 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [redirect, setRedirect] = useState(false);
 
-  const handleLoginRedirect = () => {
-    router.push('/login');
-  };
+  useEffect(() => {
+    if (redirect) {
+      const timer = setTimeout(() => {
+        router.push('/login');
+      }, 2000); // Arahkan setelah 2 detik
+
+      return () => clearTimeout(timer);
+    }
+  }, [redirect, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +52,7 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
         setName('');
         setEmail('');
         setPassword('');
+        setRedirect(true); // trigger redirect
       }
     } catch (err) {
       setError('Gagal terhubung ke server');
@@ -53,13 +61,13 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-[#F6E9DA]">
-    <img
-      src="https://cdn.builder.io/api/v1/image/assets/TEMP/c0d52516637309c6a7d9f01766fd46c0a52b6a06?placeholderIfAbsent=true&apiKey=600b45a3b00b44838808f9741fb53917"
-      alt="Login Background"
-      className="object-cover absolute inset-0 w-full h-full z-0"
-    />
+      <img
+        src="https://cdn.builder.io/api/v1/image/assets/TEMP/c0d52516637309c6a7d9f01766fd46c0a52b6a06?placeholderIfAbsent=true&apiKey=600b45a3b00b44838808f9741fb53917"
+        alt="Login Background"
+        className="object-cover absolute inset-0 w-full h-full z-0"
+      />
       <div className="relative z-10 p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-lg backdrop-blur-sm max-md:max-w-[400px] max-sm:p-5 max-sm:rounded-3xl">
-      <div className="mx-auto w-full max-w-[404px]">
+        <div className="mx-auto w-full max-w-[404px]">
           <h1 className="mb-2.5 text-3xl font-bold text-black xl:text-4xl">Welcome!</h1>
           <p className="mb-4 text-base text-black xl:text-xl">Please Create Your Account!</p>
 
@@ -128,7 +136,7 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
             <span>Already have an account? </span>
             <button
               type="button"
-              onClick={handleLoginRedirect}
+              onClick={() => router.push('/login')}
               className="text-blue-700 cursor-pointer hover:underline"
             >
               Login
