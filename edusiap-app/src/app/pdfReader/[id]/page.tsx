@@ -53,7 +53,7 @@ const StorybookDetail = () => {
       <Sidebar />
       <main className="flex-1 ml-[97px]">
         <Header />
-        <div className="flex flex-col items-center w-full px-4 py-10">
+        <div className="flex flex-col items-center w-full px-4 py-10 mt-20">
           <h1 className="text-3xl font-bold mb-4 text-lime-800 text-center">{book.title}</h1>
 
           <iframe

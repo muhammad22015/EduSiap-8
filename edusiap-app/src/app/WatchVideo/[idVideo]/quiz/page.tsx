@@ -196,7 +196,7 @@ const QuizPage = () => {
   return (
     <div className="flex justify-center items-center min-h-screen p-4 bg-quiz">
       <div className="min-w-5/6 mx-20 my-10 p-5 bg-gray-900/90 rounded-lg shadow-md text-center relative">
-        <h1 className="text-2xl font-bold text-white mb-6">
+        <h1 className="text-2xl font-bold text-white mb-6 max-md:text-lg">
           {quiz ? quiz.title : 'Quiz'}
         </h1>
 
@@ -216,11 +216,11 @@ const QuizPage = () => {
             {/* Current question */}
             <div className="space-y-3">
               <div className="flex">
-                <h2 className="text-4xl font-semibold text-white flex-1 text-left mb-10 mt-5">
+                <h2 className="text-4xl font-semibold text-white flex-1 text-left mb-10 mt-5 max-md:text-xl max-md:mb-5 max-md:mt-2">
                   {currentQuestion?.title}
                 </h2>
               </div>
-              <div className="flex gap-2 mt-10">
+              <div className="flex gap-2 mt-10 max-md:flex max-md:mt-5 max-md:flex-col max-lg:grid max-lg:grid-cols-2">
                 {currentQuestion?.answers.map((answer, index) => {
                   const isSelected = selectedAnswers.get(currentQuestion.question_id) === answer.answer_id;
                   const bgColor = OPTION_COLORS[index % OPTION_COLORS.length];
@@ -243,7 +243,7 @@ const QuizPage = () => {
                         onChange={() => { }}
                         className="hidden"
                       />
-                      <label htmlFor={`answer-${answer.answer_id}`} className="cursor-pointer text-black text-2xl">
+                      <label htmlFor={`answer-${answer.answer_id}`} className="cursor-pointer text-black text-2xl max-md:text-lg">
                         {answer.answer}
                       </label>
                     </div>
@@ -274,7 +274,7 @@ const QuizPage = () => {
                 <button
                   onClick={handleSubmit}
                   disabled={!hasSelectedAnswer}
-                  className={`py-2 px-4 rounded-md transition-colors ${!hasSelectedAnswer ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'}`}
+                  className={`py-2 px-4 rounded-md transition-colors max-sm:py-1 max-sm:px-1 max-sm:text-md ${!hasSelectedAnswer ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'}`}
                 >
                   Submit Quiz
                 </button>
@@ -288,7 +288,7 @@ const QuizPage = () => {
         {/* Score Popup */}
         {showScorePopup && (
           <div className="fixed inset-0 bg-quiz bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-900/90 p-8 rounded-lg shadow-xl max-w-sm w-full">
+            <div className="bg-gray-900/90 p-8 rounded-lg shadow-xl max-w-sm w-full  max-sm:w-5/6">
               <h3 className="text-2xl font-bold text-white mb-2">Quiz Completed!</h3>
               <PieChart percentage={calculatePercentage()} />
               <p className="text-lg mb-6 text-white">

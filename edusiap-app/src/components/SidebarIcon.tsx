@@ -36,7 +36,7 @@ export const SidebarIcon: React.FC<SidebarIconProps> = ({ name, svg }) => {
       title={name}
       onClick={handleClick}
     >
-      <div dangerouslySetInnerHTML={{ __html: svg }} className='flex items-center justify-evenly max-sm:scale-75'></div>
+      <div dangerouslySetInnerHTML={{ __html: svg }} className='flex items-center justify-evenly scale-75'></div>
       <span className='block relative -top-4 w-full text-center text-gray-700 font-bold text-lg'>{name}</span>
     </div>
   );

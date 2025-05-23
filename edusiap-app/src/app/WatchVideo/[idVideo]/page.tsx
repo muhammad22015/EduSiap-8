@@ -6,32 +6,31 @@ import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 interface Video {
-  id: number;
+  video_id: number;  // Sesuai dengan response backend
   title: string;
-  uploader: string;
-  video_link: string; // Menggunakan 'video_link' sesuai nama kolom di database
+  video_link: string;
+  // Tambahkan field lain sesuai response
 }
 
 export default function WatchVideoPage() {
-  const { idVideo } = useParams(); // Mengambil ID video dari URL parameter
-  const [video, setVideo] = useState<Video | null>(null); // State untuk menyimpan data video
-  const [loading, setLoading] = useState(true); // State loading untuk menunggu data
+  const { idVideo } = useParams();
+  const [video, setVideo] = useState<Video | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mengambil data video berdasarkan ID saat komponen pertama kali di-render
   useEffect(() => {
     const fetchVideo = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/videos/watch?id=${idVideo}`);
+        const res = await fetch(`http://localhost:5000/videos?id=${idVideo}`);
         const data = await res.json();
         
-        // Jika statusnya 'Authorized', maka simpan data video ke state
         if (data.status === 'Authorized') {
-          setVideo(data.response);
+          // Ambil video pertama dari array response
+          setVideo(data.response[0]); // <-- Perubahan utama di sini
         }
-        setLoading(false); // Mengubah loading menjadi false setelah data diterima
+        setLoading(false);
       } catch (err) {
         console.error(err);
-        setLoading(false); // Set loading false jika terjadi error
+        setLoading(false);
       }
     };
     fetchVideo();
@@ -40,36 +39,29 @@ export default function WatchVideoPage() {
   return (
     <div className="flex min-h-screen bg-orange-100">
       <Sidebar />
-      <main className="flex-1 py-0 max-md:px-5 max-md:py-0 ml-[120px] mt-[120px] mb-[30px]">
+      <main className="flex-1 py-0 max-max-xl:px-5 max-max-xl:py-0 ml-[120px] mt-[120px] mb-[30px] max-sm:ml-0">
         <Header />
         <div className="flex flex-col w-full items-center justify-center">
           {loading ? (
             <p className="text-center text-xl text-gray-600 mt-20">Loading video...</p>
           ) : video ? (
             <>
-              {/* Menampilkan video menggunakan iframe */}
               <div className="w-full max-w-6xl flex justify-center items-center mb-6">
                 <iframe
-                  className="bg-white w-full h-[600px] rounded-2xl border border-black"
+                  className="bg-white w-full h-[600px] rounded-2xl border border-black max-sm:h-50 max-xl:h-80 max-xl:w-4/5"
                   src={video.video_link}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                ></iframe>
+                />
               </div>
-              <h1 className="text-3xl font-bold text-black mt-6">{video.title}</h1>
-              <p className="text-lg text-gray-700 mb-6">{video.uploader}</p>
-              <div className="flex flex-row gap-8 h-16 w-full items-center justify-center mt-6">
+              <h1 className="text-3xl font-bold text-black mt-6 px-10 max-sm:text-lg max-sm:mt-0 max-sm:px-5 max-xl:text-2xl">{video.title}</h1>
+              <div className="flex flex-row gap-8 h-16 w-full items-center justify-center mt-6 max-sm:mt-0">
                 <Link href={`/WatchVideo/${idVideo}/quiz`}>
-                  <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white">
+                  <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white max-xl:w-32 max-xl:h-12 max-xl:text-xl max-sm:text-lg max-sm:w-24 max-sm:h-8">
                     QUIZ
                   </button>
                 </Link>
-                {/* <Link href="/pdfReader">
-                  <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white">
-                    Story Book
-                  </button>
-                </Link> */}
               </div>
             </>
           ) : (

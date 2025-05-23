@@ -45,7 +45,7 @@ export const Sidebar: React.FC = () => {
       aria-label="Main Navigation"
     >
       <button 
-        className={`mb-20 mt-5 scale-50 rounded-full p-6 
+        className={`my-5 scale-50 rounded-full p-6 
           ${isExpanded ? 'max-sm:bg-transparent' : 'max-sm:bg-white'}
           ${isExpanded ? 'max-sm:border-none' : 'max-sm:border-4'}
           ${isExpanded ? 'max-sm:border-none' : 'max-sm:border-gray-300'}

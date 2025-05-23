@@ -18,6 +18,7 @@ const playlistVideosById = async (req,res) => {
                         title: true,
                         view_count: true,
                         upload_date: true,
+                        video_link: true,
                     }
                 },
             },

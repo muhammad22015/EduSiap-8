@@ -6,16 +6,20 @@ import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
 
 interface Video {
-  video_id: number;
-  video_url: string;
+  video_link?: string;  // properti URL video
   title: string;
-  description: string;
-  video_link: string; // Mengambil video_link dari tabel
+  view_count: number;
+  upload_date: string;
 }
 
 interface PlaylistVideo {
-  video: Video;
+  playlist_id: number;
+  video_id: number;
   position: number;
+  playlist: {
+    title: string;
+  };
+  video: Video;
 }
 
 const PlaylistDetailPage = () => {
@@ -24,14 +28,33 @@ const PlaylistDetailPage = () => {
   const [videos, setVideos] = useState<PlaylistVideo[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fungsi untuk mengubah URL YouTube menjadi format embed
-  const getEmbedUrl = (url: string) => {
-    const regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:watch\?v=|embed\/)([^&?/]+)/;
-    const match = url.match(regex);
-    if (match && match[1]) {
-      return `https://www.youtube.com/embed/${match[1]}`;
+  // Fungsi mengubah YouTube / Google Drive link ke embed url iframe
+  const getEmbedUrl = (url?: string) => {
+    if (!url) return "";
+
+    // YouTube long URL
+    const ytRegex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&]+)/;
+    const ytMatch = url.match(ytRegex);
+    if (ytMatch && ytMatch[1]) {
+      return `https://www.youtube.com/embed/${ytMatch[1]}`;
     }
-    return url; // Jika bukan URL YouTube, kembalikan url yang asli
+
+    // YouTube short URL
+    const ytShortRegex = /(?:https?:\/\/)?youtu\.be\/([^?&]+)/;
+    const ytShortMatch = url.match(ytShortRegex);
+    if (ytShortMatch && ytShortMatch[1]) {
+      return `https://www.youtube.com/embed/${ytShortMatch[1]}`;
+    }
+
+    // Google Drive file URL
+    const gdRegex = /\/file\/d\/([^/]+)\//;
+    const gdMatch = url.match(gdRegex);
+    if (gdMatch && gdMatch[1]) {
+      return `https://drive.google.com/file/d/${gdMatch[1]}/preview`;
+    }
+
+    // Kalau bukan match pattern apa pun, return url apa adanya
+    return url;
   };
 
   useEffect(() => {
@@ -40,7 +63,7 @@ const PlaylistDetailPage = () => {
         const res = await fetch(`http://localhost:5000/playlists-videos?id=${id}`);
         const data = await res.json();
         if (data && data.response) {
-          setVideos(data.response); // Menyimpan video ke state
+          setVideos(data.response);
         }
       } catch (err) {
         console.error("Failed to fetch playlist videos:", err);
@@ -68,30 +91,37 @@ const PlaylistDetailPage = () => {
             <p className="text-center text-gray-500">Tidak ada video dalam playlist ini.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-5xl">
-              {videos.map((item) => (
-                <div
-                  key={item.video.video_id}
-                  onClick={() => router.push(`/WatchVideo/${item.video.video_id}`)}
-                  className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
-                >
-                  <div className="w-full mb-4">
-                    {/* Menampilkan iframe video */}
+              {videos.map((item) => {
+                const embedUrl = getEmbedUrl(item.video.video_link);
+
+                return (
+                  <div
+                    key={`${item.video_id}-${item.position}`}
+                    onClick={() => router.push(`/WatchVideo/${item.video_id}`)}
+                    className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
+                  >
+                    <h2 className="text-lg font-semibold text-lime-900 mb-2 text-center">
+                      {item.video.title}
+                    </h2>
                     <div className="aspect-video">
-                      <iframe
-                        src={getEmbedUrl(item.video.video_link)} // Menggunakan fungsi getEmbedUrl
-                        title={item.video.title}
-                        frameBorder="0"
-                        allowFullScreen
-                        className="w-full h-56 rounded-md pointer-events-none"
-                      />
+                      {embedUrl ? (
+                        <iframe
+                          src={embedUrl}
+                          title={item.video.title}
+                          frameBorder="0"
+                          allow="autoplay; fullscreen"
+                          allowFullScreen
+                          className="w-full h-56 rounded-md"
+                        />
+                      ) : (
+                        <div className="w-full h-56 bg-gray-200 rounded-md flex items-center justify-center">
+                          <span>Video unavailable</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                  {/* Menampilkan judul video */}
-                  <h2 className="text-lg font-semibold text-lime-900 mb-2 text-center">
-                    {item.video.title}
-                  </h2>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
