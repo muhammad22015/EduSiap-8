@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { userProfileByUserId, updateUserProfileByUserId } = require('../controllers/UserProfileController');
+const { authenticate } = require('../middleware/middleware')
 
-router.get('/', userProfileByUserId);
-router.put('/update', updateUserProfileByUserId);
+// PROTECTED ROUTES
+router.get('/', authenticate, userProfileByUserId);
+router.put('/update', authenticate, updateUserProfileByUserId);
 
 module.exports = router;

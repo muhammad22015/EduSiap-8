@@ -1,7 +1,8 @@
 const { Prisma } = require('../prisma/prismaClient');
 
 const scoreById = async (req,res) => {
-    const { user_id, quiz_id } = req.body;
+    const { user_id } = req.user;
+    const { quiz_id } = req.body;
     if(!user_id || !quiz_id ){
         return res.status(400).json({ status: "Bad Request", error: "user_id atau quiz_id tidak ditemukan"});
     }
@@ -24,7 +25,8 @@ const scoreById = async (req,res) => {
 }
 
 const uploadScoreById = async (req,res) => {
-    const { user_id, quiz_id, score } = req.body;
+    const { user_id } = req.user;
+    const { quiz_id, score } = req.body;
     if (!user_id || !quiz_id){
         return res.status(400).json({ status: "Bad Request", error: "user_id atau quiz_id tidak ditemukan"});
     }

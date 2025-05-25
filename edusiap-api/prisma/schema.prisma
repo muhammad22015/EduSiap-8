@@ -154,6 +154,10 @@ model user_quiz {
   @@index([user_id], map: "user_id_foreign")
 }
 
+model refresh_token {
+  refresh_token String @id @db.VarChar(255)
+}
+
 enum playlist_category {
   Matematika
   Sains

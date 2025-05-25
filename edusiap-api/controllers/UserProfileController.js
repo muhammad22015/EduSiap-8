@@ -3,6 +3,8 @@ const Joi = require('joi');
 
 const userProfileByUserId = async (req,res) => {
     const { id } = req.query;
+    const { user_id } = req.user;
+    if(parseInt(id) !== parseInt(user_id)) return res.status(403).json({ error: "Tidak diizinkan mengakses data user lain" });
 
     try {
         const user_profile = await Prisma.user_profile.findUnique({
@@ -42,6 +44,8 @@ const updateUserProfileByUserId = async (req,res) => {
     if (error) return res.status(422).json({ status: error.details[0].message, error: `Input ${error.details[0].message.match(/"([^"]*)"/)?.[1]} data tidak memenuhi format yang ditentukan` });
 
     const { id } = req.query;
+    const { user_id } = req.user;
+    if(parseInt(id) !== parseInt(user_id)) return res.status(403).json({ error: "Tidak diizinkan mengakses data user lain" });
 
     try {
         const user_profile = await Prisma.user_profile.update({
