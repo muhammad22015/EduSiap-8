@@ -81,7 +81,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             {errorMessage && <div className="text-red-600 text-sm">{errorMessage}</div>}
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center text-black text-sm xl:text-lg">
+              {/* <label className="flex items-center text-black text-sm xl:text-lg">
                 <input
                   type="checkbox"
                   checked={rememberMe}
@@ -89,14 +89,14 @@ const LoginForm: React.FC<LoginFormProps> = ({
                   className="mr-2 h-5 w-5"
                 />
                 Remember for 30 days
-              </label>
-              <button
+              </label> */}
+              {/* <button
                 type="button"
                 onClick={onForgotPassword}
                 className="text-sm text-blue-600 hover:underline xl:text-lg"
               >
                 Forgot password
-              </button>
+              </button> */}
             </div>
 
             <button
@@ -108,7 +108,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           </form>
 
           <div className="flex gap-6 justify-between mb-5 max-sm:flex-col max-sm:gap-2.5">
-            <SocialButton icon="google" text="Sign in with Google" />
+            {/* <SocialButton icon="google" text="Sign in with Google" /> */}
             {/* <SocialButton icon="apple" text="Sign in with Apple" /> */}
           </div>
 

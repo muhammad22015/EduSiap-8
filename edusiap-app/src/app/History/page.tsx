@@ -10,7 +10,8 @@ interface Video {
   video_url: string;
   title: string;
   description: string;
-  video_link: string; // Mengambil video_link dari tabel
+  video_link: string;
+  thumbnail?: string; // properti thumbnail baru
 }
 
 interface History {
@@ -30,16 +31,6 @@ const HistoryPage = () => {
 
   const userId = searchParams.get("id");
 
-  // Fungsi untuk mengubah URL YouTube menjadi format embed
-  const getEmbedUrl = (url: string) => {
-    const regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:watch\?v=|embed\/)([^&?/]+)/;
-    const match = url.match(regex);
-    if (match && match[1]) {
-      return `https://www.youtube.com/embed/${match[1]}`;
-    }
-    return url; // Jika bukan URL YouTube, kembalikan url yang asli
-  };
-
   useEffect(() => {
     const fetchHistory = async () => {
       if (!userId) {
@@ -49,18 +40,32 @@ const HistoryPage = () => {
       }
 
       try {
-        const res = await fetch(`http://localhost:5000/history?id=${userId}`);
-        const data = await res.json();
+        // Ambil data history dan data video sekaligus
+        const [historyRes, videoRes] = await Promise.all([
+          fetch(`http://localhost:5000/history?id=${userId}`),
+          fetch("http://localhost:5000/videos"),
+        ]);
 
-        if (!res.ok) {
-          throw new Error(data.message || "Gagal mengambil data history.");
-        }
+        const historyData = await historyRes.json();
+        const videoData = await videoRes.json();
 
-        if (data?.response?.length > 0) {
-          setHistories(data.response);
-        } else {
-          setHistories([]);
-        }
+        if (!historyRes.ok)
+          throw new Error(historyData.message || "Gagal mengambil data history.");
+        if (!videoRes.ok)
+          throw new Error(videoData.message || "Gagal mengambil data video.");
+
+        const videoList: Video[] = videoData.response;
+
+        // Gabungkan video ke masing-masing history
+        const combined = historyData.response.map((history: History) => {
+          const matchedVideo = videoList.find((v) => v.video_id === history.video_id);
+          return {
+            ...history,
+            video: matchedVideo || null,
+          };
+        });
+
+        setHistories(combined);
       } catch (err: any) {
         setError(err.message || "Terjadi kesalahan saat memuat data.");
       } finally {
@@ -91,32 +96,28 @@ const HistoryPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
               {histories.map((item) => (
                 <div
-                  key={`${item.history_id}-${item.video_id}`} // Kombinasikan history_id dan video_id untuk memastikan keunikan
+                  key={`${item.history_id}-${item.video_id}`}
                   className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition cursor-pointer"
-                  onClick={() => router.push(`/WatchVideo/${item.video_id}`)} // Navigasi ke halaman video
+                  onClick={() => router.push(`/WatchVideo/${item.video_id}`)}
                 >
-                  {/* Menampilkan iframe video */}
                   <div className="w-full mb-4">
-                    {item.video?.video_link && (
-                      <div className="aspect-video">
-                        <iframe
-                          src={getEmbedUrl(item.video.video_link)} // Menggunakan fungsi getEmbedUrl
-                          title={item.video.title}
-                          frameBorder="0"
-                          allowFullScreen
-                          className="w-full h-56 rounded-md pointer-events-none"
-                        />
+                    {item.video?.thumbnail ? (
+                      <img
+                        src={item.video.thumbnail}
+                        alt={item.video.title}
+                        className="w-full h-56 object-contain rounded-md"
+                      />
+                    ) : (
+                      <div className="w-full h-56 bg-gray-200 rounded-md flex items-center justify-center">
+                        <span className="text-gray-500">Thumbnail tidak tersedia</span>
                       </div>
                     )}
                   </div>
-
-                  {/* Menampilkan judul video */}
                   <h2 className="text-xl font-semibold text-center text-lime-900">
                     {item.video?.title ?? "Judul tidak tersedia"}
                   </h2>
                   <p className="text-sm text-center text-gray-600">
-                    Ditonton pada:{" "}
-                    {new Date(item.watched_at).toLocaleString("id-ID")}
+                    Ditonton pada: {new Date(item.watched_at).toLocaleString("id-ID")}
                   </p>
                 </div>
               ))}

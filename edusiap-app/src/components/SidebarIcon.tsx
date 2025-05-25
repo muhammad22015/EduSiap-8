@@ -24,7 +24,7 @@ export const SidebarIcon: React.FC<SidebarIconProps> = ({ name, svg }) => {
     if (name == 'Daftar Putar') {
       router.push('/Playlist')
     }
-    if (name == 'History') {
+    if (name == 'Riwayat Tontonan') {
       router.push('/History')
     }
   };

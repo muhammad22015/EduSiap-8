@@ -5,6 +5,7 @@ interface Video {
   video_id: number;
   title: string;
   video_link: string;
+  thumbnail: string;
 }
 
 interface VideoGridProps {
@@ -58,6 +59,7 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ searchQuery }) => {
                 id={video.video_id}
                 title={video.title}
                 video_link={video.video_link}
+                thumbnail={video.thumbnail}
               />
             ))
           ) : (

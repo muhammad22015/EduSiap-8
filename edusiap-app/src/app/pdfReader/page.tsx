@@ -9,6 +9,7 @@ interface Storybook {
   book_id: number;
   title: string;
   book_link: string;
+  thumbnail: string;
 }
 
 const PdfReaderPage = () => {
@@ -46,7 +47,7 @@ const PdfReaderPage = () => {
               >
                 {/* Gunakan path relatif untuk gambar */}
                 <img
-                  src="https://i.imgur.com/YnYR3G6.png"
+                  src={book.thumbnail}
                   alt={book.title}
                   className="w-full h-48 object-contain rounded-md mb-4" // Gunakan object-contain
                 />
