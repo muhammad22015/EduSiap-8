@@ -28,32 +28,75 @@ const PdfReaderPage = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-orange-100">
+    <div className="flex min-h-screen bg-orange-100 relative">
+      {/* Background doodle */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-30"
+        style={{
+          backgroundImage: "url('/doodle.jpg')",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          zIndex: 0,
+        }}
+      />
+
       <Sidebar />
-      <main className="flex-1 ml-[120px]">
+      <main className="flex-1 ml-[120px] relative z-10">
         <Header />
-        <div className="flex flex-col items-center w-full px-4 py-10">
+        <div className="flex flex-col items-center w-full py-10">
           <h1 className="text-4xl font-bold mb-8 text-black text-center">
             Buku Cerita Anak!
           </h1>
 
-          {/* Grid daftar buku */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
+          {/* Grid dengan gap horizontal tipis */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-1 gap-y-3 w-full max-w-6xl">
             {books.map((book) => (
               <div
                 key={book.book_id}
                 onClick={() => router.push(`/pdfReader/${book.book_id}`)}
-                style={{ backgroundColor: "rgba(246, 233, 218, 0.8)" }} // F6E9DA dengan transparansi
-                className="cursor-pointer p-4 rounded-lg shadow-lg transform transition duration-300 hover:scale-110 hover:shadow-2xl"
+                className="
+                  relative 
+                  group 
+                  cursor-pointer 
+                  rounded-lg 
+                  shadow-lg 
+                  bg-white 
+                  transition-transform 
+                  duration-300 
+                  transform 
+                  hover:scale-110 
+                  hover:shadow-2xl
+                  w-max
+                  max-w-[320px]  /* diperbesar dari 250px */
+                "
               >
-                <img
-                  src={book.thumbnail}
-                  alt={book.title}
-                  className="w-full h-48 object-contain rounded-md mb-4"
+                {/* Overlay hover */}
+                <div
+                  className="
+                    absolute inset-0 rounded-lg 
+                    bg-[#F6E9DA]/70
+                    pointer-events-none 
+                    z-20
+                    scale-90
+                    opacity-0
+                    transition-all duration-300
+                    group-hover:opacity-70
+                    group-hover:scale-105
+                  "
                 />
-                <h2 className="text-xl font-semibold text-center text-lime-900">
-                  {book.title}
-                </h2>
+
+                {/* Konten utama dengan padding kecil */}
+                <div className="relative z-30 p-4">
+                  <img
+                    src={book.thumbnail}
+                    alt={book.title}
+                    className="object-contain rounded-md mb-4 block w-full"
+                  />
+                  <h2 className="text-xl font-semibold text-center text-lime-900 break-words">
+                    {book.title}
+                  </h2>
+                </div>
               </div>
             ))}
           </div>

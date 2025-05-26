@@ -35,18 +35,32 @@ export default function WatchVideoPage() {
   }, [idVideo]);
 
   return (
-    <div className="flex min-h-screen bg-orange-100">
+    <div className="flex min-h-screen bg-orange-100 relative">
+      {/* Doodle Background Sedikit Lebih Kecil */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: 'url(/doodle.jpg)',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: '110% auto',
+          backgroundPosition: 'center',
+          zIndex: 0,
+        }}
+      ></div>
+
       <Sidebar />
-      <main className="flex-1 py-0 max-max-xl:px-5 max-max-xl:py-0 ml-[120px] mt-[120px] mb-[30px] max-sm:ml-0">
+      <main className="flex-1 py-0 max-max-xl:px-5 max-max-xl:py-0 ml-[120px] mt-[120px] mb-[30px] max-sm:ml-0 relative z-10">
         <Header />
         <div className="flex flex-col w-full items-center justify-center">
           {loading ? (
             <p className="text-center text-xl text-gray-600 mt-20">Loading video...</p>
           ) : video ? (
             <>
-              <div className="w-full max-w-6xl flex justify-center items-center mb-6">
+              <div className="w-full max-w-6xl flex justify-center items-center mb-6 relative">
+                {/* Box background putih transparan di belakang video */}
+                <div className="absolute w-full h-full bg-white opacity-60 rounded-2xl z-0" />
                 <iframe
-                  className="bg-white w-full h-[600px] rounded-2xl border border-black max-sm:h-50 max-xl:h-80 max-xl:w-4/5"
+                  className="bg-white w-full h-[600px] rounded-2xl border border-black max-sm:h-50 max-xl:h-80 max-xl:w-4/5 relative z-10"
                   src={video.video_link}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
