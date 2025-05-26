@@ -1,4 +1,5 @@
 // HomePage/VideoCard.tsx
+'use client';
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -20,11 +21,10 @@ export const VideoCard: React.FC<VideoCardProps> = ({ id, title, thumbnail }) =>
       try {
         e.preventDefault(); // Prevent immediate navigation
         await watchVideo(id);
-        // Navigate after API call is successful
-        window.location.href = `/WatchVideo/${id}`;
       } catch (error) {
         console.error('Failed to update video history:', error);
-        // Navigate even if API fails
+      } finally {
+        // Navigate after API call completes (success or fail)
         window.location.href = `/WatchVideo/${id}`;
       }
     }
