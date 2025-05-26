@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { registerUser } from '@/lib/api';
 import InputField from './InputField';
 import SocialButton from './SocialButton';
 
@@ -33,29 +34,19 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
     setSuccess('');
 
     try {
-      const res = await fetch('http://localhost:5000/users/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: name,
-          email,
-          password,
-        }),
+      const data = await registerUser({
+        username: name,
+        email,
+        password,
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.status || 'Something went wrong');
-      } else {
-        setSuccess(data.status || 'Registrasi berhasil! Silakan verifikasi email.');
-        setName('');
-        setEmail('');
-        setPassword('');
-        setRedirect(true); // trigger redirect
-      }
+      setSuccess(data.status || 'Registrasi berhasil! Silakan verifikasi email.');
+      setName('');
+      setEmail('');
+      setPassword('');
+      setRedirect(true);
     } catch (err) {
-      setError('Gagal terhubung ke server');
+      setError(err instanceof Error ? err.message : 'Gagal terhubung ke server');
     }
   };
 

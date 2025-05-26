@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
+import { apiClient } from "@/lib/apiClient";
+import { getUserIdFromToken } from "@/lib/auth";
 
 interface Video {
   video_id: number;
@@ -11,7 +13,7 @@ interface Video {
   title: string;
   description: string;
   video_link: string;
-  thumbnail?: string; // properti thumbnail baru
+  thumbnail?: string;
 }
 
 interface History {
@@ -26,37 +28,29 @@ const HistoryPage = () => {
   const [histories, setHistories] = useState<History[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const searchParams = useSearchParams();
   const router = useRouter();
-
-  const userId = searchParams.get("id");
 
   useEffect(() => {
     const fetchHistory = async () => {
+      const userId = getUserIdFromToken();
+      
       if (!userId) {
-        setError("User ID tidak ditemukan di query parameter.");
+        setError("User not authenticated");
         setLoading(false);
+        router.push('/login');
         return;
       }
 
       try {
-        // Ambil data history dan data video sekaligus
-        const [historyRes, videoRes] = await Promise.all([
-          fetch(`http://localhost:5000/history?id=${userId}`),
-          fetch("http://localhost:5000/videos"),
-        ]);
-
-        const historyData = await historyRes.json();
-        const videoData = await videoRes.json();
-
-        if (!historyRes.ok)
-          throw new Error(historyData.message || "Gagal mengambil data history.");
-        if (!videoRes.ok)
-          throw new Error(videoData.message || "Gagal mengambil data video.");
+        // Use your apiClient which handles authentication
+        const historyData = await apiClient(`/history?id=${userId}`);
+        
+        // Get videos separately
+        const videoData = await apiClient("/videos");
 
         const videoList: Video[] = videoData.response;
 
-        // Gabungkan video ke masing-masing history
+        // Combine history with video data
         const combined = historyData.response.map((history: History) => {
           const matchedVideo = videoList.find((v) => v.video_id === history.video_id);
           return {
@@ -68,13 +62,16 @@ const HistoryPage = () => {
         setHistories(combined);
       } catch (err: any) {
         setError(err.message || "Terjadi kesalahan saat memuat data.");
+        if (err.message.includes('Session expired')) {
+          router.push('/login');
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchHistory();
-  }, [userId]);
+  }, [router]);
 
   return (
     <div className="flex min-h-screen bg-orange-100">

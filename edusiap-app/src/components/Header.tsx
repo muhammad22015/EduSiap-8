@@ -1,19 +1,52 @@
 // components/Header.tsx
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SearchBar } from './SearchBar';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
+import LogoutButton from './LogoutButton';
+import { getUserIdFromToken } from '@/lib/auth';
+import { apiClient } from '@/lib/apiClient';
 
 interface HeaderProps {
   initialSearch?: string;
 }
 
+interface UserProfile {
+  avatar?: string;
+  username?: string;
+}
+
 export const Header: React.FC<HeaderProps> = ({ initialSearch = '' }) => {
   const [isProfileHovered, setIsProfileHovered] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const userId = getUserIdFromToken();
+        if (!userId) return;
+
+        const response = await apiClient(`/user-profile/?id=${userId}`);
+        if (response.status === "Authorized" && response.response) {
+          setUserProfile({
+            avatar: response.response.avatar || 'https://avatar.iran.liara.run/public/31',
+            username: response.response.user?.username
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleSearch = (query: string) => {
     const isHomepage = pathname === '/';
@@ -39,30 +72,35 @@ export const Header: React.FC<HeaderProps> = ({ initialSearch = '' }) => {
         />
       </div>
 
-      <div 
-        className="relative"
-        onMouseEnter={() => setIsProfileHovered(true)}
-        onMouseLeave={() => setIsProfileHovered(false)}
-      >
-        <div className="rounded-xl h-[69px] w-[69px] object-cover border-2 border-gray-200 overflow-hidden cursor-pointer max-xl:hidden">
-          <img 
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/80479b3752c51b9cbb466836e9396b3b4d62b33e" 
-            alt="Profile"
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        {isProfileHovered && (
-          <div className="absolute flex flex-col gap-1 right-0 w-48 rounded-md py-1 z-50">
-            <Link href="/profile" passHref className="block px-4 py-2 text-sm bg-white border rounded-lg border-orange-400 text-gray-700 transition-colors hover:scale-105 hover:bg-orange-300 duration-200">
-              My Profile
-            </Link>
-            <Link href="/logout" passHref className="block px-4 py-2 text-sm bg-white border rounded-lg border-orange-400 text-gray-700 transition-colors hover:scale-105 hover:bg-orange-300 duration-200">
-              Logout
-            </Link>
+      {!loading && (
+        <div 
+          className="relative"
+          onMouseEnter={() => setIsProfileHovered(true)}
+          onMouseLeave={() => setIsProfileHovered(false)}
+        >
+          <div className="rounded-full h-[69px] w-[69px] object-cover border-2 border-orange-300 overflow-hidden cursor-pointer max-xl:hidden">
+            <img 
+              src={userProfile?.avatar || 'https://avatar.iran.liara.run/public/31'} 
+              alt={userProfile?.username || 'User profile'}
+              className="w-full h-full object-cover"
+            />
           </div>
-        )}
-      </div>
+
+          {isProfileHovered && (
+            <div className="absolute flex flex-col gap-1 right-0 w-48 rounded-md py-1 z-50">
+              <Link 
+                href="/Profile" 
+                passHref 
+                className="block px-4 py-2 text-sm bg-white border rounded-lg border-orange-400 text-gray-700 transition-colors hover:scale-105 hover:bg-orange-300 duration-200"
+                onClick={() => setIsProfileHovered(false)}
+              >
+                My Profile
+              </Link>
+              <LogoutButton className="block px-4 py-2 text-sm bg-white border rounded-lg border-orange-400 text-gray-700 transition-colors hover:scale-105 hover:bg-orange-300 duration-200 text-left" />
+            </div>
+          )}
+        </div>
+      )}
     </header>
   );
 };

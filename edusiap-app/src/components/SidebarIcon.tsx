@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { getUserIdFromToken } from '@/lib/auth';
 
 interface SidebarIconProps {
   name: string;
@@ -12,23 +13,28 @@ export const SidebarIcon: React.FC<SidebarIconProps> = ({ name, svg }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    if (name === 'Buku Cerita') {
-      router.push('/pdfReader');
-    }
-    if (name == 'Beranda') {
-      router.push('/')
-    }
-    if (name == 'User') {
-      router.push('/Profile')
-    }
-    if (name == 'Daftar Putar') {
-      router.push('/Playlist')
-    }
-    if (name == 'Riwayat Tontonan') {
-      router.push('/History')
+    const userId = getUserIdFromToken();
+    
+    switch (name) {
+      case 'Buku Cerita':
+        router.push('/pdfReader');
+        break;
+      case 'Beranda':
+        router.push('/');
+        break;
+      case 'User':
+        router.push('/Profile');
+        break;
+      case 'Daftar Putar':
+        router.push('/Playlist');
+        break;
+      case 'Riwayat Tontonan':
+        router.push('/History');
+        break;
+      default:
+        break;
     }
   };
-
 
   return (
     <div
