@@ -4,11 +4,11 @@ import React from 'react';
 import SocialButton from './SocialSignIn';
 
 type LoginFormProps = {
-  onSubmit: (email: string, password: string) => Promise<{ status: string }>;  // Mengubah tipe onSubmit agar mengembalikan objek dengan status
+  onSubmit: (email: string, password: string) => Promise<{ status: string }>;
   onForgotPassword: () => void;
   onSignUp: () => void;
   onGoToGallery: () => void;
-  // onAddVideo: () => void;
+  onContinueWithoutLogin: () => void; // Add this new prop
 };
 
 const LoginForm: React.FC<LoginFormProps> = ({
@@ -16,7 +16,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   onForgotPassword,
   onSignUp,
   onGoToGallery,
-  // onAddVideo,
+  onContinueWithoutLogin,
 }) => {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -25,7 +25,6 @@ const LoginForm: React.FC<LoginFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       const loginResponse = await onSubmit(email, password);
       if (loginResponse.status === "Login Berhasil") {
@@ -51,7 +50,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
             <h2 className="text-2xl font-bold text-center text-black max-sm:text-xl xl:text-3xl">Welcome back!</h2>
 
             <div>
-              <label htmlFor="email" className="block mb-1 font-medium text-black xl:text-lg ">
+              <label htmlFor="email" className="block mb-1 font-medium text-black xl:text-lg">
                 Email address
               </label>
               <input
@@ -59,7 +58,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-2 border border-black rounded text-black xl:text-lg "
+                className="w-full p-2 border border-black rounded text-black xl:text-lg"
                 required
               />
             </div>
@@ -81,58 +80,39 @@ const LoginForm: React.FC<LoginFormProps> = ({
             {errorMessage && <div className="text-red-600 text-sm">{errorMessage}</div>}
 
             <div className="flex items-center justify-between">
-              {/* <label className="flex items-center text-black text-sm xl:text-lg">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                  className="mr-2 h-5 w-5"
-                />
-                Remember for 30 days
-              </label> */}
-              {/* <button
-                type="button"
-                onClick={onForgotPassword}
-                className="text-sm text-blue-600 hover:underline xl:text-lg"
-              >
-                Forgot password
-              </button> */}
+              {/* Remember me and forgot password options */}
             </div>
 
             <button
               type="submit"
-              className="p-2.5 mb-5 w-full text-sm font-bold text-white bg-lime-900 rounded-xl cursor-pointer xl:text-xl"
+              className="p-2.5 w-full text-sm font-bold text-white bg-lime-900 rounded-xl cursor-pointer xl:text-xl"
             >
               Login
             </button>
           </form>
 
-          <div className="flex gap-6 justify-between mb-5 max-sm:flex-col max-sm:gap-2.5">
-            {/* <SocialButton icon="google" text="Sign in with Google" /> */}
-            {/* <SocialButton icon="apple" text="Sign in with Apple" /> */}
+          {/* Add the Continue without login button */}
+          <button
+            onClick={onContinueWithoutLogin}
+            className="p-2.5 mt-4 w-full text-sm font-bold text-lime-900 bg-transparent border-2 border-lime-900 rounded-xl cursor-pointer hover:bg-lime-50 transition-colors xl:text-xl"
+          >
+            Lanjutkan tanpa login
+          </button>
+
+          <div className="flex gap-6 justify-between my-5 max-sm:flex-col max-sm:gap-2.5">
+            {/* Social login buttons */}
           </div>
 
           <p className="text-center text-sm text-black xl:text-lg">
-            Don’t have an account?{' '}
+            Belum punya akun?{' '}
             <button
               type="button"
               onClick={onSignUp}
               className="text-blue-600 hover:underline"
             >
-              Sign Up
+              Daftar Sekarang
             </button>
           </p>
-
-          {/* <p className="text-center text-sm text-black mt-2">
-            ➕{' '}
-            <button
-              type="button"
-              onClick={onAddVideo}
-              className="text-blue-600 hover:underline"
-            >
-              Add New Video
-            </button>
-          </p> */}
         </div>
       </div>
     </div>

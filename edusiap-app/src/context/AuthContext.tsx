@@ -17,30 +17,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null); // Initialize with null
 
-  const scheduleTokenRefresh = () => {
-    const accessToken = getAccessToken();
-    if (!accessToken) return;
-
-    try {
-      const payload = JSON.parse(atob(accessToken.split('.')[1]));
-      const expiresAt = payload.exp * 1000;
-      const now = Date.now();
-      const expiresIn = expiresAt - now;
-
-      // Refresh token 1 minute before expiration
-      const refreshTime = Math.max(0, expiresIn - 60000);
-
-      if (refreshTimerRef.current) {
-        clearTimeout(refreshTimerRef.current);
-      }
-      refreshTimerRef.current = setTimeout(() => {
-        refreshToken();
-      }, refreshTime);
-    } catch (error) {
-      console.error('Error scheduling token refresh:', error);
-    }
-  };
-
   const refreshToken = async () => {
     const refreshTokenValue = getRefreshToken();
     if (!refreshTokenValue) {
@@ -52,13 +28,36 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await refreshAccessToken(refreshTokenValue);
       if (response.status === "Access Token berhasil dibuat") {
         setTokens(response.response, refreshTokenValue);
-        scheduleTokenRefresh();
-      } else {
-        logout();
+        scheduleTokenRefresh(); // Reschedule the next refresh
+        return true; // Indicate success
       }
     } catch (error) {
       console.error('Token refresh failed:', error);
-      logout();
+    }
+
+    logout();
+    return false;
+  };
+
+  const scheduleTokenRefresh = () => {
+    const accessToken = getAccessToken();
+    if (!accessToken) return;
+
+    try {
+      const payload = JSON.parse(atob(accessToken.split('.')[1]));
+      const expiresAt = payload.exp * 1000;
+      const now = Date.now();
+      const expiresIn = expiresAt - now;
+
+      // Refresh token 1 minute before expiration (or 30 seconds if less than 1 min left)
+      const refreshTime = expiresIn > 60000 ? expiresIn - 60000 : Math.max(0, expiresIn - 30000);
+
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+      }
+      refreshTimerRef.current = setTimeout(refreshToken, refreshTime);
+    } catch (error) {
+      console.error('Error scheduling token refresh:', error);
     }
   };
 

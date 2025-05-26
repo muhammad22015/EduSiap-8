@@ -44,6 +44,7 @@ export default function Home() {
       onForgotPassword={handleForgotPassword}
       onSignUp={handleSignUp}
       onGoToGallery={handleGoToGallery}
+      onContinueWithoutLogin={handleGoToGallery}
     />
   );
 }

@@ -1,9 +1,12 @@
+// WatchVideo/[idVideo]/page.tsx
 'use client';
 import Link from 'next/link';
 import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { watchVideo } from '@/lib/api';
 
 interface Video {
   video_id: number;
@@ -15,6 +18,7 @@ export default function WatchVideoPage() {
   const { idVideo } = useParams();
   const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -24,6 +28,15 @@ export default function WatchVideoPage() {
 
         if (data.status === 'Authorized') {
           setVideo(data.response[0]);
+          
+          // Call watchVideo API if user is authenticated
+          if (isAuthenticated) {
+            try {
+              await watchVideo(Number(idVideo));
+            } catch (error) {
+              console.error('Failed to update video history:', error);
+            }
+          }
         }
         setLoading(false);
       } catch (err) {
@@ -32,7 +45,7 @@ export default function WatchVideoPage() {
       }
     };
     fetchVideo();
-  }, [idVideo]);
+  }, [idVideo, isAuthenticated]);
 
   return (
     <div className="flex min-h-screen bg-orange-100 relative">

@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 
 interface LogoutButtonProps {
   className?: string;
+  onLogout?: () => void; // Add this line
 }
 
 // components/LogoutButton.tsx

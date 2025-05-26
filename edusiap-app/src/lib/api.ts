@@ -59,7 +59,7 @@ export const getVideos = async () => {
 };
 
 export const watchVideo = async (videoId: number) => {
-  return apiClient('/history/watch', {
+  return apiClient('/history/watched', {
     method: 'POST',
     body: JSON.stringify({ video_id: videoId }),
   });
