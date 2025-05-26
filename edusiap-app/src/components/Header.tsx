@@ -30,8 +30,16 @@ export const Header: React.FC<HeaderProps> = ({ initialSearch = '' }) => {
   return (
     <header className="fixed top-0 left-[120px] right-0 z-50 bg-white  px-4 sm:px-20 flex justify-between items-center h-[101px] max-sm:bg-transparent max-sm:left-[50px] max-sm:top-3 max-sm:w-full">
       {/* <h1 className="text-3xl text-black font-bold max-xl:hidden">Logo</h1> */}
-      <div className='max-xl:hidden '>
-        <Image src="/3-removebg-preview.png" alt="logo" width={170} height={170} className="w-[170px] h-auto"/>
+      <div className='max-xl:hidden'>
+        <Link href="/" passHref>
+            <Image 
+              src="/3-removebg-preview.png" 
+              alt="logo" 
+              width={170} 
+              height={170} 
+              className="w-[170px] h-auto cursor-pointer" // Added cursor-pointer
+            />
+        </Link>
       </div>
       
       <div className="absolute left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4 max-sm:max-w-3/4 max-sm:left-3/7">
