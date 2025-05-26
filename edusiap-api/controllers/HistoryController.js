@@ -2,6 +2,8 @@ const { Prisma } = require('../prisma/prismaClient');
 
 const historyByUserId = async (req,res) => {
     const { id } = req.query;
+    const { user_id } = req.user;
+    if (parseInt(id) !== parseInt(user_id)) return res.status(403).json({ error: "Tidak diizinkan mengakses data user lain" });
 
     try {
         const history = await Prisma.history.findMany({
@@ -20,10 +22,10 @@ const historyByUserId = async (req,res) => {
 
 const watchVideo = async (req, res) => {
     try {
-        const { user_id, video_id } = req.body;
-  
+        const { user_id } = req.user;
+        const { video_id } = req.body;
         if (!user_id || !video_id) {
-            return res.status(400).json({ status: "Bad Request", error: "user_id dan video_id tidak ditemukan" });
+            return res.status(400).json({ status: "Bad Request", error: "user_id atau video_id tidak ditemukan" });
         }
   
         await Prisma.$transaction([
@@ -58,9 +60,8 @@ const watchVideo = async (req, res) => {
   
       return res.status(200).json({ status: "Success", message: "History terbaharui dan Video View Count naik" });
   
-    } catch (error) {
-        console.error('Error in watchVideo:', error);
-        return res.status(500).json({ status: "Server Error", error: error.message });
+    } catch (err) {
+        return res.status(500).json({ status: "Server Error", error: err.message });
     }
 };
 
