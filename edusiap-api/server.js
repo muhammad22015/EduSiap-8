@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const routes = require('./routes')
+const router = require('./routes')
 const cors = require('cors');
 
 app.use(cors());
@@ -11,7 +11,7 @@ app.get('/', (req,res) => {
     res.send("Welcome to EduSiap API");
 })
 
-app.use('/', routes);
+app.use('/', router);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

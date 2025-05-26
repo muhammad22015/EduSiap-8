@@ -12,23 +12,28 @@ interface VideoCardProps {
 export const VideoCard: React.FC<VideoCardProps> = ({ id, title, thumbnail }) => {
   return (
     <Link href={`/WatchVideo/${id}`} passHref>
-      <div className="flex flex-col gap-3.5 items-center cursor-pointer relative">
-        {/* Overlay div that will capture clicks */}
-        <div className="absolute inset-0 z-10 w-full h-[220px] max-md:h-auto"></div>
-        
-        {/* Image thumbnail */}
-        <div className="w-full h-[220px] rounded-[30px] max-md:h-auto max-md:w-full overflow-hidden">
+      <div className="flex flex-col gap-3.5 items-center cursor-pointer relative group">
+        {/* Container with scaling and shadow on hover */}
+        <div
+          className="w-full h-[220px] rounded-[30px] max-md:h-auto max-md:w-full overflow-hidden
+                     shadow-md bg-opacity-80 transition-transform duration-300 ease-in-out transform 
+                     group-hover:scale-110 group-hover:shadow-2xl"
+          style={{ backgroundColor: 'rgba(246, 233, 218, 0.8)' }} // transparan warna #F6E9DA
+        >
           <Image
             src={thumbnail}
             alt={title}
-            width={400}  // Set appropriate width
-            height={220} // Set appropriate height
+            width={400}
+            height={220}
             className="w-full h-full object-cover"
-            unoptimized={true} // Remove this if you want Next.js to optimize the image
+            unoptimized={true}
           />
         </div>
-        
-        <h2 className="text-xl leading-7 text-black max-sm:text-xl   lg:text-2xl xl:text-2xl">{title}</h2>
+
+        {/* Title */}
+        <h2 className="text-xl leading-7 text-black max-sm:text-xl lg:text-2xl xl:text-2xl text-center">
+          {title}
+        </h2>
       </div>
     </Link>
   );

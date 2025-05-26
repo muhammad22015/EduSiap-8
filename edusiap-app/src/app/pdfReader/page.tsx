@@ -43,13 +43,13 @@ const PdfReaderPage = () => {
               <div
                 key={book.book_id}
                 onClick={() => router.push(`/pdfReader/${book.book_id}`)}
-                className="cursor-pointer p-4 bg-white rounded-lg shadow hover:shadow-lg transition"
+                style={{ backgroundColor: "rgba(246, 233, 218, 0.8)" }} // F6E9DA dengan transparansi
+                className="cursor-pointer p-4 rounded-lg shadow-lg transform transition duration-300 hover:scale-110 hover:shadow-2xl"
               >
-                {/* Gunakan path relatif untuk gambar */}
                 <img
                   src={book.thumbnail}
                   alt={book.title}
-                  className="w-full h-48 object-contain rounded-md mb-4" // Gunakan object-contain
+                  className="w-full h-48 object-contain rounded-md mb-4"
                 />
                 <h2 className="text-xl font-semibold text-center text-lime-900">
                   {book.title}
