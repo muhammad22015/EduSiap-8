@@ -8,6 +8,9 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
   let accessToken = getAccessToken();
   const refreshToken = getRefreshToken();
 
+  console.log('Making request to:', `${API_URL}${endpoint}`); // Log the URL
+  console.log('Request options:', options); // Log request options
+
   const makeRequest = async (token: string | null) => {
     const headers = {
       'Content-Type': 'application/json',
@@ -15,14 +18,25 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
       ...options.headers,
     };
 
+    console.log('Request headers:', headers); // Log headers
+
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers,
     });
 
+    console.log('Response status:', response.status); // Log status
+    console.log('Response headers:', Object.fromEntries(response.headers.entries())); // Log response headers
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.error || errorData.message || 'Request failed');
+      console.log('Full error response:', { // More detailed error logging
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+        errorData
+      });
+      throw new Error(errorData.error || errorData.message || `Request failed with status ${response.status}`);
     }
 
     return response.json();

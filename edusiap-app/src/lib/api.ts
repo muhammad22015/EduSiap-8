@@ -80,3 +80,32 @@ export const updateUserProfile = async (userId: string, data: {
     body: JSON.stringify(data)
   });
 };
+
+export const submitQuizScore = async (quiz_id: number, score: number) => {
+  console.log('Submitting score:', { quiz_id, score }); // Add logging
+  try {
+    const response = await apiClient('/user-quiz/upload', {
+      method: 'POST',
+      body: JSON.stringify({ quiz_id, score }),
+    });
+    console.log('Score submission success:', response); // Add logging
+    return response;
+  } catch (error) {
+    console.error('Score submission failed:', error); // Enhanced error logging
+    throw error;
+  }
+};
+
+export const getQuizByVideoId = (videoId: string) => {
+  return apiClient(`/quiz/${videoId}`);
+};
+
+export const getQuizScore = async (quiz_id: number) => {
+  try {
+    const response = await apiClient(`/user-quiz?quiz_id=${quiz_id}`);
+    return response;
+  } catch (error) {
+    console.error('Error fetching quiz score:', error);
+    throw error;
+  }
+};
