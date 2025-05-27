@@ -102,8 +102,18 @@ export const getQuizByVideoId = (videoId: string) => {
 
 export const getQuizScore = async (quiz_id: number) => {
   try {
-    const response = await apiClient(`/user-quiz?quiz_id=${quiz_id}`);
-    return response;
+    const response = await apiClient('/user-quiz/', {
+      method: 'GET',
+      body: JSON.stringify({ quiz_id }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Request failed with status ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Error fetching quiz score:', error);
     throw error;

@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+import { getQuizScore } from '@/lib/api'; // Make sure to import your API function
 
 interface Video {
   video_id: number;
@@ -11,10 +12,22 @@ interface Video {
   video_link: string;
 }
 
+interface QuizScoreResponse {
+  status: string;
+  response: {
+    user_id: number;
+    quiz_id: number;
+    score: number;
+  } | null;
+}
+
 export default function WatchVideoPage() {
   const { idVideo } = useParams();
   const [video, setVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
+  const [quizScore, setQuizScore] = useState<number | null>(null);
+  const [scoreLoading, setScoreLoading] = useState(false);
+  const [scoreError, setScoreError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchVideo = async () => {
@@ -32,6 +45,33 @@ export default function WatchVideoPage() {
       }
     };
     fetchVideo();
+  }, [idVideo]);
+
+  useEffect(() => {
+    const fetchQuizScore = async () => {
+      if (!idVideo) return;
+
+      setScoreLoading(true);
+      setScoreError(null);
+
+      try {
+        const response: QuizScoreResponse = await getQuizScore(Number(idVideo));
+
+        if (response.status === "Authorized") {
+          setQuizScore(response.response?.score ?? null);
+        } else {
+          setQuizScore(null);
+        }
+      } catch (error) {
+        console.error('Failed to fetch quiz score:', error);
+        setScoreError('Failed to load quiz score');
+        setQuizScore(null);
+      } finally {
+        setScoreLoading(false);
+      }
+    };
+
+    fetchQuizScore();
   }, [idVideo]);
 
   return (
@@ -70,15 +110,30 @@ export default function WatchVideoPage() {
               <h1 className="text-3xl font-bold text-black mt-6 px-10 max-sm:text-lg max-sm:mt-0 max-sm:px-5 max-xl:text-2xl">
                 {video.title}
               </h1>
+
+              {/* Display quiz score if available */}
+              {scoreLoading ? (
+                <div className="text-xl text-gray-600 mb-4">Loading score...</div>
+              ) : scoreError ? (
+                <div className="text-xl text-red-600 mb-4">{scoreError}</div>
+              ) : quizScore !== null ? (
+                <div className="text-xl font-semibold text-green-800 mb-4">
+                  Your Quiz Score: {quizScore}
+                </div>
+              ) : (
+                <div className="text-xl text-gray-600 mb-4">
+                  No quiz score yet. Complete the quiz to see your score!
+                </div>
+              )}
+
+
               <div className="flex flex-row gap-8 h-16 w-full items-center justify-center mt-6 max-sm:mt-0">
                 <Link href={`/WatchVideo/${idVideo}/quiz`}>
-                  <button
-                    className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white 
-                    max-xl:w-32 max-xl:h-12 max-xl:text-xl 
-                    max-sm:text-lg max-sm:w-24 max-sm:h-8
-                    transition-transform duration-300 ease-in-out transform 
-                    hover:scale-110 hover:shadow-2xl"
-                  >
+                  <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white 
+                max-xl:w-32 max-xl:h-12 max-xl:text-xl 
+                max-sm:text-lg max-sm:w-24 max-sm:h-8
+                transition-transform duration-300 ease-in-out transform 
+                hover:scale-110 hover:shadow-2xl">
                     QUIZ
                   </button>
                 </Link>
