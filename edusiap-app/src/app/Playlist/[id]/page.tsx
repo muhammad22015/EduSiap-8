@@ -11,11 +11,7 @@ interface Video {
   title: string;
   description: string;
   video_link: string;
-<<<<<<< HEAD
   thumbnail: string; // Tambahkan thumbnail
-=======
-  thumbnail: string;
->>>>>>> 14a3e3192145a8cd783c29e9e2a3008333dc22c2
 }
 
 interface PlaylistVideo {
@@ -86,7 +82,6 @@ const PlaylistDetailPage = () => {
                     className="relative group bg-white p-6 rounded-lg shadow-md cursor-pointer 
                                transition-transform duration-300 transform hover:scale-105 hover:shadow-xl"
                   >
-<<<<<<< HEAD
                     <div className="w-full mb-4">
                       {thumbnail ? (
                         <img
@@ -103,7 +98,6 @@ const PlaylistDetailPage = () => {
                     <h2 className="text-lg font-semibold text-lime-900 mb-2 text-center">
                       {title}
                     </h2>
-=======
                     {/* Overlay timbul saat hover */}
                     <div
                       className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 
@@ -129,7 +123,6 @@ const PlaylistDetailPage = () => {
                         {title}
                       </h2>
                     </div>
->>>>>>> 14a3e3192145a8cd783c29e9e2a3008333dc22c2
                   </div>
                 );
               })}
