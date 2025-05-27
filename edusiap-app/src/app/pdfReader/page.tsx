@@ -31,14 +31,14 @@ const PdfReaderPage = () => {
     <div className="flex min-h-screen bg-orange-100 relative">
       {/* Background doodle */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-30"
-        style={{
-          backgroundImage: "url('/doodle.jpg')",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          zIndex: 0,
-        }}
+        className="pointer-events-none absolute inset-0 opacity-20 z-0 bg-[url('/doodle.jpg')] bg-no-repeat bg-center bg-cover"
+        // style={{
+        //   backgroundImage: "url('/doodle.jpg')",
+        //   backgroundRepeat: "no-repeat",
+        //   backgroundPosition: "center",
+        //   backgroundSize: "cover",
+        //   zIndex: 0,
+        // }}
       />
 
       <Sidebar />
@@ -50,56 +50,57 @@ const PdfReaderPage = () => {
           </h1>
 
           {/* Grid dengan gap horizontal tipis */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-1 gap-y-3 w-full max-w-6xl">
-            {books.map((book) => (
-              <div
-                key={book.book_id}
-                onClick={() => router.push(`/pdfReader/${book.book_id}`)}
-                className="
-                  relative 
-                  group 
-                  cursor-pointer 
-                  rounded-lg 
-                  shadow-lg 
-                  bg-white 
-                  transition-transform 
-                  duration-300 
-                  transform 
-                  hover:scale-110 
-                  hover:shadow-2xl
-                  w-max
-                  max-w-[320px]  /* diperbesar dari 250px */
-                "
-              >
-                {/* Overlay hover */}
-                <div
-                  className="
-                    absolute inset-0 rounded-lg 
-                    bg-[#F6E9DA]/70
-                    pointer-events-none 
-                    z-20
-                    scale-90
-                    opacity-0
-                    transition-all duration-300
-                    group-hover:opacity-70
-                    group-hover:scale-105
-                  "
-                />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-1 gap-y-3 w-full max-w-6xl place-items-center">
+  {books.map((book) => (
+    <div
+      key={book.book_id}
+      onClick={() => router.push(`/pdfReader/${book.book_id}`)}
+      className="
+        relative 
+        group 
+        cursor-pointer 
+        rounded-lg 
+        shadow-lg 
+        bg-white 
+        transition-transform 
+        duration-300 
+        transform 
+        hover:scale-110 
+        hover:shadow-2xl
+        w-full
+        max-w-[320px]
+      "
+    >
+      {/* Overlay hover */}
+      <div
+        className="
+          absolute inset-0 rounded-lg 
+          bg-[#F6E9DA]/70
+          pointer-events-none 
+          z-20
+          scale-90
+          opacity-0
+          transition-all duration-300
+          group-hover:opacity-70
+          group-hover:scale-105
+        "
+      />
 
-                {/* Konten utama dengan padding kecil */}
-                <div className="relative z-30 p-4">
-                  <img
-                    src={book.thumbnail}
-                    alt={book.title}
-                    className="object-contain rounded-md mb-4 block w-full"
-                  />
-                  <h2 className="text-xl font-semibold text-center text-lime-900 break-words">
-                    {book.title}
-                  </h2>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Konten utama */}
+      <div className="relative z-30 p-4">
+        <img
+          src={book.thumbnail}
+          alt={book.title}
+          className="object-contain rounded-md mb-4 block w-full"
+        />
+        <h2 className="text-xl font-semibold text-center text-lime-900 break-words">
+          {book.title}
+        </h2>
+      </div>
+    </div>
+  ))}
+</div>
+
         </div>
       </main>
     </div>
