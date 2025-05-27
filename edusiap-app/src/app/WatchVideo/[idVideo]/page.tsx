@@ -51,6 +51,11 @@ export default function WatchVideoPage() {
   const fetchQuizScore = async () => {
     if (!idVideo) return;
 
+    console.log('Debug fetchQuizScore:');
+    console.log('idVideo:', idVideo);
+    console.log('idVideo type:', typeof idVideo);
+    console.log('Parsed idVideo:', Number(idVideo));
+
     setScoreLoading(true);
     setScoreError(null);
 

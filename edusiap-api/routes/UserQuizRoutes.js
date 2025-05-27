@@ -4,7 +4,8 @@ const { scoreById, uploadScoreById } = require('../controllers/UserQuizControlle
 const { authenticate } = require('../middleware/middleware')
 
 // PROTECTED ROUTES
-router.get('/', authenticate, scoreById);
+// router.get('/', authenticate, scoreById);
+router.get('/:quiz_id', authenticate, scoreById);
 router.post('/upload', authenticate, uploadScoreById);
 
 module.exports = router;

@@ -2,14 +2,21 @@ const { Prisma } = require('../prisma/prismaClient');
 
 const scoreById = async (req, res) => {
     const { user_id } = req.user;
-    const { quiz_id } = req.query;
+    // Get quiz_id from params instead of body for GET requests
+    const quiz_id = req.params.quiz_id ? parseInt(req.params.quiz_id) : null;
     
-    console.log('Fetching score for:', { user_id, quiz_id });
-
-    if (!user_id || !quiz_id) {
+    // Debug logging
+    console.log('Debug scoreById:');
+    console.log('req.user:', req.user);
+    console.log('req.params:', req.params);
+    console.log('user_id:', user_id);
+    console.log('quiz_id (raw):', req.params.quiz_id);
+    console.log('quiz_id (parsed):', quiz_id);
+    
+    if (!user_id || !quiz_id || isNaN(quiz_id)) {
         return res.status(400).json({ 
             status: "Bad Request", 
-            error: "Missing user_id or quiz_id" 
+            error: `user_id atau quiz_id tidak ditemukan. user_id: ${user_id}, quiz_id: ${quiz_id}`
         });
     }
 
@@ -17,31 +24,24 @@ const scoreById = async (req, res) => {
         const userquiz = await Prisma.user_quiz.findUnique({
             where: {
                 user_id_quiz_id: {
-                    user_id: parseInt(user_id),
-                    quiz_id: parseInt(quiz_id)
+                    user_id,
+                    quiz_id
                 }
             }
         });
         
-        console.log('Found quiz record:', userquiz);
-
         if (!userquiz) {
-            return res.status(200).json({ 
-                status: "Authorized", 
-                response: null 
+            return res.status(404).json({ 
+                status: "Not Found", 
+                error: "User Quiz tidak ditemukan"
             });
         }
 
         return res.status(200).json({ 
             status: "Authorized", 
-            response: {
-                user_id: userquiz.user_id,
-                quiz_id: userquiz.quiz_id,
-                score: userquiz.score
-            }
+            response: userquiz
         });
     } catch (err) {
-        console.error('Error fetching quiz score:', err);
         return res.status(500).json({ 
             status: "Server Error", 
             error: err.message
@@ -49,14 +49,18 @@ const scoreById = async (req, res) => {
     }
 }
 
-const uploadScoreById = async (req,res) => {
+const uploadScoreById = async (req, res) => {
     const { user_id } = req.user;
     const { quiz_id, score } = req.body;
-    if (!user_id || !quiz_id){
-        return res.status(400).json({ status: "Bad Request", error: "user_id atau quiz_id tidak ditemukan"});
+    
+    if (!user_id || !quiz_id) {
+        return res.status(400).json({ 
+            status: "Bad Request", 
+            error: "user_id atau quiz_id tidak ditemukan"
+        });
     }
 
-    try{
+    try {
         await Prisma.user_quiz.upsert({
             where: {
                 user_id_quiz_id: {
@@ -74,9 +78,15 @@ const uploadScoreById = async (req,res) => {
             },
         });
 
-        return res.status(200).json({ status: "Success", message: "UserQuiz Score terbaharui"});
-    } catch(err){
-        return res.status(500).json({ status: "Server Error", error: err.message });
+        return res.status(200).json({ 
+            status: "Success", 
+            message: "UserQuiz Score terbaharui"
+        });
+    } catch (err) {
+        return res.status(500).json({ 
+            status: "Server Error", 
+            error: err.message 
+        });
     }
 }
 
