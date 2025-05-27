@@ -58,7 +58,18 @@ export default function WatchVideoPage() {
               <h1 className="text-3xl font-bold text-black mt-6 px-10 max-sm:text-lg max-sm:mt-0 max-sm:px-5 max-xl:text-2xl">{video.title}</h1>
               <div className="flex flex-row gap-8 h-16 w-full items-center justify-center mt-6 max-sm:mt-0">
                 <Link href={`/WatchVideo/${idVideo}/quiz`}>
-                  <button className="w-48 h-14 bg-green-800 rounded-2xl text-2xl text-white max-xl:w-32 max-xl:h-12 max-xl:text-xl max-sm:text-lg max-sm:w-24 max-sm:h-8">
+                  <button 
+                    className="
+                      w-48 h-14 
+                      bg-green-700 hover:bg-green-800 
+                      cursor-pointer 
+                      rounded-2xl 
+                      text-2xl text-white 
+                      transition-colors duration-300 
+                      max-xl:w-32 max-xl:h-12 max-xl:text-xl 
+                      max-sm:text-lg max-sm:w-24 max-sm:h-8
+                    "
+                  >
                     QUIZ
                   </button>
                 </Link>
