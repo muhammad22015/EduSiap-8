@@ -11,7 +11,7 @@ interface Video {
   title: string;
   description: string;
   video_link: string;
-  thumbnail: string; // Tambahkan thumbnail
+  thumbnail: string;
 }
 
 interface PlaylistVideo {
@@ -48,14 +48,14 @@ const PlaylistDetailPage = () => {
     <div className="flex min-h-screen bg-orange-100 relative">
       {/* Doodle Background */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-20"
-        style={{
-          backgroundImage: "url(/doodle.jpg)",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "110% auto",
-          backgroundPosition: "center",
-          zIndex: 0,
-        }}
+        className="pointer-events-none absolute inset-0 opacity-20 z-0 bg-[url('/doodle.jpg')] bg-no-repeat bg-center bg-cover"
+        // style={{
+        //   backgroundImage: "url(/doodle.jpg)",
+        //   backgroundRepeat: "no-repeat",
+        //   backgroundSize: "110% auto",
+        //   backgroundPosition: "center",
+        //   zIndex: 0,
+        // }}
       />
 
       <Sidebar />
@@ -82,22 +82,6 @@ const PlaylistDetailPage = () => {
                     className="relative group bg-white p-6 rounded-lg shadow-md cursor-pointer 
                                transition-transform duration-300 transform hover:scale-105 hover:shadow-xl"
                   >
-                    <div className="w-full mb-4">
-                      {thumbnail ? (
-                        <img
-                          src={thumbnail}
-                          alt={title}
-                          className="w-full h-56 object-cover rounded-md"
-                        />
-                      ) : (
-                        <div className="w-full h-56 bg-gray-200 rounded-md flex items-center justify-center">
-                          <span>Thumbnail unavailable</span>
-                        </div>
-                      )}
-                    </div>
-                    <h2 className="text-lg font-semibold text-lime-900 mb-2 text-center">
-                      {title}
-                    </h2>
                     {/* Overlay timbul saat hover */}
                     <div
                       className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 

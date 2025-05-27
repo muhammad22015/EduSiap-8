@@ -102,10 +102,7 @@ export const getQuizByVideoId = (videoId: string) => {
 
 export const getQuizScore = async (quiz_id: number) => {
   try {
-    const response = await apiClient('/user-quiz/', {
-      method: 'GET',
-      body: JSON.stringify({ quiz_id }),
-    });
+    const response = await apiClient(`/user-quiz/?quiz_id=${quiz_id}`);
     
     if (!response.ok) {
       const errorData = await response.json();

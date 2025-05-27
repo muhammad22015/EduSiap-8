@@ -52,14 +52,14 @@ const StorybookDetail = () => {
     <div className="flex min-h-screen bg-orange-100 relative">
       {/* Background doodle */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-30"
-        style={{
-          backgroundImage: "url('/doodle.jpg')",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          zIndex: 0,
-        }}
+        className="pointer-events-none absolute inset-0 opacity-20 z-0 bg-[url('/doodle.jpg')] bg-no-repeat bg-center bg-cover"
+        // style={{
+        //   backgroundImage: "url('/doodle.jpg')",
+        //   backgroundRepeat: "no-repeat",
+        //   backgroundPosition: "center",
+        //   backgroundSize: "cover",
+        //   zIndex: 0,
+        // }}
       />
 
       <Sidebar />

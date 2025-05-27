@@ -47,32 +47,41 @@ export default function WatchVideoPage() {
     fetchVideo();
   }, [idVideo]);
 
-  useEffect(() => {
-    const fetchQuizScore = async () => {
-      if (!idVideo) return;
+ useEffect(() => {
+  const fetchQuizScore = async () => {
+    if (!idVideo) return;
 
-      setScoreLoading(true);
-      setScoreError(null);
+    setScoreLoading(true);
+    setScoreError(null);
 
-      try {
-        const response: QuizScoreResponse = await getQuizScore(Number(idVideo));
-
-        if (response.status === "Authorized") {
-          setQuizScore(response.response?.score ?? null);
-        } else {
-          setQuizScore(null);
-        }
-      } catch (error) {
-        console.error('Failed to fetch quiz score:', error);
-        setScoreError('Failed to load quiz score');
+    try {
+      const response: QuizScoreResponse = await getQuizScore(Number(idVideo));
+      console.log('Quiz score response:', response);
+      
+      if (response.status === "Authorized" && response.response) {
+        setQuizScore(response.response.score);
+      } else {
         setQuizScore(null);
-      } finally {
-        setScoreLoading(false);
       }
-    };
+    } catch (error: unknown) {
+      console.error('Failed to fetch quiz score:', error);
+      let errorMessage = 'Failed to load quiz score';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      setScoreError(errorMessage);
+      setQuizScore(null);
+    } finally {
+      setScoreLoading(false);
+    }
+  };
 
-    fetchQuizScore();
-  }, [idVideo]);
+  fetchQuizScore();
+}, [idVideo]);
 
   return (
     <div className="flex min-h-screen bg-orange-100 relative">
@@ -112,19 +121,27 @@ export default function WatchVideoPage() {
               </h1>
 
               {/* Display quiz score if available */}
-              {scoreLoading ? (
-                <div className="text-xl text-gray-600 mb-4">Loading score...</div>
-              ) : scoreError ? (
-                <div className="text-xl text-red-600 mb-4">{scoreError}</div>
-              ) : quizScore !== null ? (
-                <div className="text-xl font-semibold text-green-800 mb-4">
-                  Your Quiz Score: {quizScore}
-                </div>
-              ) : (
-                <div className="text-xl text-gray-600 mb-4">
-                  No quiz score yet. Complete the quiz to see your score!
-                </div>
-              )}
+              <div className="w-full max-w-6xl bg-white bg-opacity-80 rounded-xl p-6 mb-6 shadow-lg">
+                {scoreLoading ? (
+                  <div className="text-center text-xl text-gray-600">Loading your quiz score...</div>
+                ) : scoreError ? (
+                  <div className="text-center text-xl text-red-600">{scoreError}</div>
+                ) : quizScore !== null ? (
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold text-green-800 mb-2">Your Quiz Result</h2>
+                    <div className="text-4xl font-bold text-green-600 mb-4">{quizScore}/100</div>
+                    <p className="text-lg text-gray-700">
+                      {quizScore >= 80 ? 'Excellent! 🎉' :
+                        quizScore >= 60 ? 'Good job! 👍' :
+                          'Keep practicing! 💪'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center text-xl text-gray-600">
+                    No quiz score yet. Complete the quiz to see your result!
+                  </div>
+                )}
+              </div>
 
 
               <div className="flex flex-row gap-8 h-16 w-full items-center justify-center mt-6 max-sm:mt-0">
