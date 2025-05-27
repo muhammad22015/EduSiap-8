@@ -33,9 +33,21 @@ const PlaylistPage = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-orange-100">
+    <div className="flex min-h-screen bg-orange-100 relative">
+      {/* Doodle Background */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: "url(/doodle.jpg)",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "110% auto", // Lebih lebar dari sebelumnya
+          backgroundPosition: "center",
+          zIndex: 0,
+        }}
+      ></div>
+
       <Sidebar />
-      <main className="flex-1 ml-[97px]">
+      <main className="flex-1 ml-[97px] relative z-10">
         <Header />
         <div className="flex flex-col items-center w-full px-4 py-10">
           <h1 className="text-4xl font-bold mb-8 text-black text-center">
@@ -50,18 +62,25 @@ const PlaylistPage = () => {
                 onClick={() =>
                   router.push(`/Playlist/${playlist.playlist_id}`)
                 }
-                className="cursor-pointer p-4 bg-white rounded-lg shadow hover:shadow-lg transition"
+                className="relative cursor-pointer p-4 bg-white rounded-lg shadow
+                  transition-transform duration-300
+                  hover:scale-110 hover:shadow-2xl"
               >
-                {/* Hapus iframe, hanya menampilkan informasi playlist */}
-                <h2 className="text-xl font-semibold text-center text-lime-900">
-                  {playlist.title}
-                </h2>
-                <p className="text-sm text-center text-gray-600">
-                  Kategori: {playlist.category}
-                </p>
-                <p className="text-xs text-center text-gray-500">
-                  Upload: {new Date(playlist.upload_date).toLocaleDateString()}
-                </p>
+                {/* Overlay saat hover */}
+                <div className="absolute inset-0 bg-[#F6E9DA]/100 rounded-lg opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
+
+                {/* Konten playlist */}
+                <div className="relative z-20">
+                  <h2 className="text-xl font-semibold text-center text-lime-900">
+                    {playlist.title}
+                  </h2>
+                  <p className="text-sm text-center text-gray-600">
+                    Kategori: {playlist.category}
+                  </p>
+                  <p className="text-xs text-center text-gray-500">
+                    Upload: {new Date(playlist.upload_date).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

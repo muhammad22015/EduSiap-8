@@ -11,7 +11,11 @@ interface Video {
   title: string;
   description: string;
   video_link: string;
+<<<<<<< HEAD
   thumbnail: string; // Tambahkan thumbnail
+=======
+  thumbnail: string;
+>>>>>>> 14a3e3192145a8cd783c29e9e2a3008333dc22c2
 }
 
 interface PlaylistVideo {
@@ -45,9 +49,21 @@ const PlaylistDetailPage = () => {
   }, [id]);
 
   return (
-    <div className="flex min-h-screen bg-orange-100">
+    <div className="flex min-h-screen bg-orange-100 relative">
+      {/* Doodle Background */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-20"
+        style={{
+          backgroundImage: "url(/doodle.jpg)",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "110% auto",
+          backgroundPosition: "center",
+          zIndex: 0,
+        }}
+      />
+
       <Sidebar />
-      <main className="flex-1 ml-[97px]">
+      <main className="flex-1 ml-[97px] relative z-10">
         <Header />
         <div className="flex flex-col items-center w-full px-4 py-10">
           <h1 className="text-3xl font-bold mb-8 text-black text-center">
@@ -67,8 +83,10 @@ const PlaylistDetailPage = () => {
                   <div
                     key={`${item.video_id}-${item.position}`}
                     onClick={() => router.push(`/WatchVideo/${item.video_id}`)}
-                    className="bg-white p-6 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
+                    className="relative group bg-white p-6 rounded-lg shadow-md cursor-pointer 
+                               transition-transform duration-300 transform hover:scale-105 hover:shadow-xl"
                   >
+<<<<<<< HEAD
                     <div className="w-full mb-4">
                       {thumbnail ? (
                         <img
@@ -85,6 +103,33 @@ const PlaylistDetailPage = () => {
                     <h2 className="text-lg font-semibold text-lime-900 mb-2 text-center">
                       {title}
                     </h2>
+=======
+                    {/* Overlay timbul saat hover */}
+                    <div
+                      className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 
+                      bg-[#F6E9DA]/80 z-20 pointer-events-none"
+                    />
+
+                    {/* Konten utama */}
+                    <div className="relative z-30">
+                      <div className="w-full mb-4">
+                        {thumbnail ? (
+                          <img
+                            src={thumbnail}
+                            alt={title}
+                            className="w-full h-56 object-cover rounded-md"
+                          />
+                        ) : (
+                          <div className="w-full h-56 bg-gray-200 rounded-md flex items-center justify-center">
+                            <span>Thumbnail unavailable</span>
+                          </div>
+                        )}
+                      </div>
+                      <h2 className="text-lg font-semibold text-lime-900 mb-2 text-center">
+                        {title}
+                      </h2>
+                    </div>
+>>>>>>> 14a3e3192145a8cd783c29e9e2a3008333dc22c2
                   </div>
                 );
               })}

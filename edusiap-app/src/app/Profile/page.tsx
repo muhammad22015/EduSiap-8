@@ -3,6 +3,8 @@ import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/apiClient';
+import { getUserIdFromToken } from '@/lib/auth';
 
 interface UserData {
   username?: string;
@@ -35,9 +37,6 @@ const availableAvatars = [
 
 export default function Profile() {
   const router = useRouter();
-  const params = useParams();
-  const idUser = params.idUser as string;
-  
   const [activeTab, setActiveTab] = useState<'view' | 'edit'>('view');
   const [userData, setUserData] = useState<UserData>({
     fullname: '',
@@ -50,19 +49,19 @@ export default function Profile() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Fetch user profile data
-  // Fetch user profile data
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user-profile/?id=${idUser}`);
+        const userId = getUserIdFromToken();
         
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile data');
+        if (!userId) {
+          throw new Error('User not authenticated');
         }
+
+        // Use apiClient which handles authentication
+        const data = await apiClient(`/user-profile/?id=${userId}`);
         
-        const data = await response.json();
         if (data.status === "Authorized" && data.response) {
           setUserData({
             fullname: data.response.fullname || '',
@@ -70,7 +69,7 @@ export default function Profile() {
             user_id: data.response.user_id,
             email: data.response.user?.email || '',
             username: data.response.user?.username || '',
-            avatar: data.response.avatar || 'https://avatar.iran.liara.run/public/31', // Ensure avatar has a default
+            avatar: data.response.avatar || 'https://avatar.iran.liara.run/public/31',
             joinedDate: data.response.user?.created_at 
               ? new Date(data.response.user.created_at).toLocaleDateString('en-US', { 
                   month: 'long', 
@@ -79,47 +78,43 @@ export default function Profile() {
               : 'Unknown date'
           });
         }
-      } catch (err) {
-        // ... error handling ...
+      } catch (err: any) {
+        setError(err.message || 'Failed to load profile');
+        if (err.message.includes('Session expired') || err.message.includes('not authenticated')) {
+          router.push('/login');
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchProfileData();
-  }, [idUser]);
+  }, [router]);
 
   const handleSave = async (updatedData: UserData) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/user-profile/update?id=${idUser}`, {
+      const userId = getUserIdFromToken();
+      
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      const result = await apiClient(`/user-profile/update?id=${userId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           fullname: updatedData.fullname,
           phone: updatedData.phone,
-          avatar: updatedData.avatar // Include the selected avatar URL
+          avatar: updatedData.avatar
         })
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-
-      const result = await response.json();
       if (result.status === "Update Berhasil") {
-        setUserData(prev => ({
-          ...prev,
-          fullname: updatedData.fullname,
-          phone: updatedData.phone,
-          avatar: updatedData.avatar
-        }));
-        setActiveTab('view');
+        // Option 1: Full page reload
+        window.location.reload();
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update profile');
+    } catch (err: any) {
+      setError(err.message || 'Failed to update profile');
       console.error('Error updating profile:', err);
     } finally {
       setIsLoading(false);
