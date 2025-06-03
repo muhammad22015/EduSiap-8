@@ -170,7 +170,7 @@ export default function Profile() {
                 onClick={() => setActiveTab('view')}
                 className={`px-4 py-2 rounded-lg max-sm:text-sm max-sm:px-2 max-sm:py-1 ${activeTab === 'view' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
               >
-                View Profile
+                Lihat Profile
               </button>
               <button 
                 onClick={() => setActiveTab('edit')}
@@ -224,7 +224,7 @@ function ProfileView({ userData }: { userData: UserData }) {
         {/* Right Column - Details */}
         <div className="w-full md:w-2/3 space-y-6">
           <div className="bg-orange-50 p-6 rounded-lg">
-            <h3 className="text-xl font-semibold mb-4 text-gray-800 max-sm:text-xl">Personal Information</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-800 max-sm:text-xl">Informasi Pribadi</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-sm:text-md">
               <div className='w-full flex flex-col'>
                 <p className="text-gray-600 text-sm">Username</p>
@@ -235,11 +235,11 @@ function ProfileView({ userData }: { userData: UserData }) {
                 <p className="text-gray-800 font-medium break-words">{userData.email}</p>
               </div>
               <div className='w-full flex flex-col'>
-                <p className="text-gray-600 text-sm">Full Name</p>
+                <p className="text-gray-600 text-sm">Nama Lengkap</p>
                 <p className="text-gray-800 font-medium break-words">{userData.fullname || 'Not set'}</p>
               </div>
               <div className='w-full flex flex-col'>
-                <p className="text-gray-600 text-sm">Phone Number</p>
+                <p className="text-gray-600 text-sm">Nomor Handphone</p>
                 <p className="text-gray-800 font-medium break-words">{userData.phone || 'Not set'}</p>
               </div>
             </div>
@@ -355,7 +355,7 @@ function ProfileEdit({ userData, onSave, onCancel }: {
           <div className="w-full md:w-2/3 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-700 mb-1 max-sm:text-md">Full Name</label>
+                <label className="block text-gray-700 mb-1 max-sm:text-md">Nama Lengkap</label>
                 <input
                   type="text"
                   name="fullname"
@@ -367,7 +367,7 @@ function ProfileEdit({ userData, onSave, onCancel }: {
               </div>
 
               <div>
-                <label className="block text-gray-700 mb-1 max-sm:text-md">Phone Number</label>
+                <label className="block text-gray-700 mb-1 max-sm:text-md">Nomor Handphone</label>
                 <input
                   type="tel"
                   name="phone"
@@ -375,7 +375,7 @@ function ProfileEdit({ userData, onSave, onCancel }: {
                   onChange={handleChange}
                   className="w-full p-3 border rounded-lg text-black max-sm:text-sm max-sm:p-2"
                   pattern="^0\d{9,12}$"
-                  title="Phone number should start with 0 and be 10-13 digits"
+                  title="Nomor Handphone Harus berawal 0 dan berjumlah 10-13 digit"
                 />
               </div>
             </div>

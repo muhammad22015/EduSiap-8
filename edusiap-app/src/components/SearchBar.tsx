@@ -10,7 +10,7 @@ interface SearchBarProps {
 
 export const SearchBar: React.FC<SearchBarProps> = ({ 
   onSearch, 
-  placeholder = 'Search...',
+  placeholder = 'Cari...',
   initialValue = ''
 }) => {
   const [searchTerm, setSearchTerm] = useState(initialValue);
@@ -114,7 +114,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           disabled={!searchTerm}
           aria-label="Submit search"
         >
-          Search
+          Cari
         </button>
       </div>
     </form>

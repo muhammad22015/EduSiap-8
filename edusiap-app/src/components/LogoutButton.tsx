@@ -44,7 +44,7 @@ export default function LogoutButton({ className }: LogoutButtonProps) {
 
   return (
     <button onClick={handleLogout} className={className}>
-      Logout
+      Keluar
     </button>
   );
 }

@@ -33,7 +33,7 @@ const scoreById = async (req, res) => {
         if (!userquiz) {
             return res.status(404).json({ 
                 status: "Not Found", 
-                error: "User Quiz tidak ditemukan"
+                error: "Belum Mengerjakan Quiz"
             });
         }
 
