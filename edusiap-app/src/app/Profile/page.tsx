@@ -168,13 +168,13 @@ export default function Profile() {
             <div className="flex space-x-4">
               <button 
                 onClick={() => setActiveTab('view')}
-                className={`px-4 py-2 rounded-lg max-sm:text-sm max-sm:px-2 max-sm:py-1 ${activeTab === 'view' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
+                className={`px-4 py-2 rounded-lg max-sm:text-sm max-sm:px-2 max-sm:py-1 cursor-pointer ${activeTab === 'view' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
               >
                 Lihat Profile
               </button>
               <button 
                 onClick={() => setActiveTab('edit')}
-                className={`px-4 py-2 rounded-lg max-sm:text-sm max-sm:px-2 max-sm:py-1 ${activeTab === 'edit' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
+                className={`px-4 py-2 rounded-lg max-sm:text-sm max-sm:px-2 max-sm:py-1 cursor-pointer ${activeTab === 'edit' ? 'bg-orange-500 text-white' : 'bg-white text-gray-700'}`}
               >
                 Edit Profile
               </button>
@@ -304,7 +304,7 @@ function ProfileEdit({ userData, onSave, onCancel }: {
               onClick={() => setShowAvatarPicker(!showAvatarPicker)}
               className="absolute inset-0 w-full h-full bg-black/70 bg-opacity-0 text-white opacity-0 
                         group-hover:bg-opacity-50 group-hover:opacity-100 transition-all duration-200
-                        flex items-center justify-center"
+                        flex items-center justify-center cursor-pointer"
             >
               <span className="bg-black px-3 py-1 rounded-full text-sm">
                 Change Avatar
@@ -384,13 +384,13 @@ function ProfileEdit({ userData, onSave, onCancel }: {
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-6 py-2 border border-black rounded-lg max-sm:text-sm max-sm:px3 max-sm:py-1 text-black hover:bg-gray-50"
+                className="px-6 py-2 border border-black rounded-lg max-sm:text-sm max-sm:px3 max-sm:py-1 text-black hover:bg-gray-50 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-orange-500 text-white rounded-lg max-sm:text-sm max-sm:px3 max-sm:py-1 hover:bg-orange-600"
+                className="px-6 py-2 bg-orange-500 text-white rounded-lg max-sm:text-sm max-sm:px3 max-sm:py-1 hover:bg-orange-600 cursor-pointer"
               >
                 Save Changes
               </button>

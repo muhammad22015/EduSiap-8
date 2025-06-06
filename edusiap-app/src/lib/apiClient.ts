@@ -36,6 +36,20 @@ export const apiClient = async (endpoint: string, options: RequestInit = {}) => 
         url: response.url,
         errorData
       });
+
+      // Special handling for quiz-related endpoints
+      if (endpoint.includes('/user-quiz/') && response.status === 404) {
+        const errorMessage = errorData.error || errorData.message || '';
+        if (errorMessage.includes('Belum Mengerjakan Quiz')) {
+          // Return a structured response instead of throwing an error
+          return {
+            status: "Not Found",
+            error: errorMessage,
+            response: null
+          };
+        }
+      }
+
       throw new Error(errorData.error || errorData.message || `Request failed with status ${response.status}`);
     }
 

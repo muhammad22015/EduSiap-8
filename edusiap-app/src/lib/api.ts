@@ -102,10 +102,19 @@ export const getQuizByVideoId = (videoId: string) => {
 
 export const getQuizScore = async (quiz_id: number) => {
   try {
-    // Use GET request with quiz_id as URL parameter
     const response = await apiClient(`/user-quiz/${quiz_id}`, {
       method: 'GET'
     });
+    
+    // Handle the case where quiz hasn't been taken
+    if (response.status === "Not Found" && response.error?.includes('Belum Mengerjakan Quiz')) {
+      return {
+        status: "Not Found",
+        response: null,
+        error: response.error
+      };
+    }
+    
     return response;
   } catch (error) {
     console.error('Error fetching quiz score:', error);

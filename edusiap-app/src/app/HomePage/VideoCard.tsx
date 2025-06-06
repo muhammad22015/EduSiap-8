@@ -10,7 +10,7 @@ interface VideoCardProps {
   id: number;
   title: string;
   video_link: string;
-  thumbnail: string;
+  thumbnail: string | "https://www.youtube.com";
 }
 
 export const VideoCard: React.FC<VideoCardProps> = ({ id, title, thumbnail }) => {

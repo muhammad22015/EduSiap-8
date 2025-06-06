@@ -59,7 +59,7 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
       />
       <div className="relative z-10 p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-lg backdrop-blur-sm max-md:max-w-[400px] max-sm:p-5 max-sm:rounded-3xl">
         <div className="mx-auto w-full max-w-[404px]">
-          <h1 className="mb-2.5 text-3xl font-bold text-black xl:text-4xl">Welcome!</h1>
+          <h1 className="mb-2.5 text-3xl font-bold text-black xl:text-4xl">Selamat Datang!</h1>
           <p className="mb-4 text-base text-black xl:text-xl">Silahkan Buat Akun Anda!</p>
 
           {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
@@ -67,7 +67,7 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
 
           <form onSubmit={handleSubmit}>
             <InputField
-              label="Name"
+              label="Nama"
               type="text"
               placeholder="Masukkan Nama"
               id="name"
@@ -75,7 +75,7 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
               onChange={(e) => setName(e.target.value)}
             />
             <InputField
-              label="Email address"
+              label="Alamat Email"
               type="email"
               placeholder="Masukkan Alamat Email"
               id="email"
@@ -114,7 +114,7 @@ const SignUpForm: React.FC<SignUpFormProps> = () => {
               type="submit"
               className="p-2.5 mb-5 w-full text-sm font-bold text-white bg-lime-900 rounded-xl cursor-pointer border-[none] xl:text-xl"
             >
-              Sign Up
+              Daftar
             </button>
           </form>
 

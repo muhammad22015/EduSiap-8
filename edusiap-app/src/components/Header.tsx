@@ -128,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({ initialSearch = '' }) => {
                     My Profile
                   </Link>
                   <LogoutButton 
-                    className="block px-4 py-2 text-sm bg-white border rounded-lg border-orange-400 text-gray-700 transition-colors hover:scale-105 hover:bg-orange-300 duration-200 text-left" 
+                    className="block px-4 py-2 text-sm bg-white border rounded-lg border-orange-400 text-gray-700 transition-colors hover:scale-105 hover:bg-orange-300 duration-200 text-left cursor-pointer" 
                     onLogout={() => setIsLoggedIn(false)}
                   />
                 </div>

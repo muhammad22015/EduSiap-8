@@ -47,11 +47,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
       <div className="relative z-10 p-8 w-full bg-white bg-opacity-80 max-w-[465px] rounded-[30px] shadow-lg backdrop-blur-sm max-md:max-w-[400px] max-sm:w-80 max-sm:p-4 max-sm:rounded-3xl">
         <div className="mx-auto w-full max-w-[404px]">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <h2 className="text-2xl font-bold text-center text-black max-sm:text-xl xl:text-3xl">Welcome back!</h2>
+            <h2 className="text-2xl font-bold text-center text-black max-sm:text-xl xl:text-3xl">Selamat Datang</h2>
 
             <div>
               <label htmlFor="email" className="block mb-1 font-medium text-black xl:text-lg">
-                Email address
+                Alamat Email
               </label>
               <input
                 id="email"

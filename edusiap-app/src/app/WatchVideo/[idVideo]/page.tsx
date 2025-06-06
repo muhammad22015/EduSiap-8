@@ -5,7 +5,7 @@ import { Header } from '@/components/Header';
 import { useParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { getQuizScore } from '@/lib/api';
-import { getAccessToken } from '@/lib/auth'; // Import function to check login status
+import { getAccessToken } from '@/lib/auth';
 
 interface Video {
   video_id: number;
@@ -28,7 +28,7 @@ export default function WatchVideoPage() {
   const [loading, setLoading] = useState(true);
   const [quizScore, setQuizScore] = useState<number | null>(null);
   const [scoreLoading, setScoreLoading] = useState(false);
-  const [scoreError, setScoreError] = useState<string | null>(null);
+  const [hasQuizBeenTaken, setHasQuizBeenTaken] = useState<boolean>(false);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   // Check login status
@@ -65,27 +65,29 @@ export default function WatchVideoPage() {
 
   useEffect(() => {
     const fetchQuizScore = async () => {
-      if (!idVideo || !isLoggedIn) return; // Only fetch if logged in
+      if (!idVideo || !isLoggedIn) return;
 
       setScoreLoading(true);
-      setScoreError(null);
 
       try {
         const response: QuizScoreResponse = await getQuizScore(Number(idVideo));
+        
         if (response.status === "Authorized" && response.response) {
           setQuizScore(response.response.score);
+          setHasQuizBeenTaken(true);
+        } else if (response.status === "Not Found") {
+          // Quiz hasn't been taken yet - this is a valid state, not an error
+          setQuizScore(null);
+          setHasQuizBeenTaken(false);
         } else {
           setQuizScore(null);
+          setHasQuizBeenTaken(false);
         }
       } catch (error: unknown) {
-        let errorMessage = 'Failed to load quiz score';
-        if (error instanceof Error) {
-          errorMessage = error.message;
-        } else if (typeof error === 'string') {
-          errorMessage = error;
-        }
-        setScoreError(errorMessage);
+        // Only log actual unexpected errors
+        console.error('Unexpected error fetching quiz score:', error);
         setQuizScore(null);
+        setHasQuizBeenTaken(false);
       } finally {
         setScoreLoading(false);
       }
@@ -105,11 +107,10 @@ export default function WatchVideoPage() {
     <div className="flex min-h-screen bg-orange-100 relative">
       {/* Background */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-20"
+        className="pointer-events-none absolute inset-0 opacity-20 bg-size-[150%]"
         style={{
           backgroundImage: 'url(/doodle.jpg)',
           backgroundRepeat: 'no-repeat',
-          backgroundSize: '110% auto',
           backgroundPosition: 'center',
           zIndex: 0,
         }}
@@ -146,9 +147,7 @@ export default function WatchVideoPage() {
                 <div className="mt-6 text-center px-4">
                   {scoreLoading ? (
                     <div className="text-xl text-gray-600">Loading Score Quiz...</div>
-                  ) : scoreError ? (
-                    <div className="text-xl text-red-600">{scoreError}</div>
-                  ) : quizScore !== null ? (
+                  ) : hasQuizBeenTaken && quizScore !== null ? (
                     <div>
                       <h2 className="text-2xl font-bold text-green-800 mb-2 max-md:text-xl max-sm:text-lg">
                         Hasil Quiz Kamu
@@ -165,8 +164,8 @@ export default function WatchVideoPage() {
                       </p>
                     </div>
                   ) : (
-                    <div className="text-xl text-gray-600">
-                     Belum Ada Score. Silahkan Selesaikan Quiz untuk Melihat Score!
+                    <div className="text-xl text-gray-700 font-bold">
+                      Belum Ada Score. Silahkan Selesaikan Quiz untuk Melihat Score!
                     </div>
                   )}
                 </div>
