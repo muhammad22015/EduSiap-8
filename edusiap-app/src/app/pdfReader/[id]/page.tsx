@@ -49,11 +49,23 @@ const StorybookDetail = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-orange-100">
+    <div className="flex min-h-screen bg-orange-100 relative">
+      {/* Background doodle */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-20 z-0 bg-[url('/doodle.jpg')] bg-no-repeat bg-center bg-cover"
+        // style={{
+        //   backgroundImage: "url('/doodle.jpg')",
+        //   backgroundRepeat: "no-repeat",
+        //   backgroundPosition: "center",
+        //   backgroundSize: "cover",
+        //   zIndex: 0,
+        // }}
+      />
+
       <Sidebar />
-      <main className="flex-1 ml-[97px]">
+      <main className="flex-1 ml-[97px] relative z-10">
         <Header />
-        <div className="flex flex-col items-center w-full px-4 py-10">
+        <div className="flex flex-col items-center w-full px-4 py-10 mt-20">
           <h1 className="text-3xl font-bold mb-4 text-lime-800 text-center">{book.title}</h1>
 
           <iframe

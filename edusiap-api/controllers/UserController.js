@@ -112,17 +112,48 @@ const login = async (req,res) => {
         const user = await Prisma.user.findFirst({
             where: { email }
         });
-        if(!user) return res.status(401).json({status: "Bad Request", error: "Email salah!"});
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if(!isMatch) return res.status(401).json({status: "Bad Request", error: "Password salah!"});
-
+        if(!user || !isMatch) return res.status(401).json({status: "Bad Request", error: "Email atau Password salah!"});
         if(!user.is_verified) return res.status(401).json({status: "Bad Request", error: "Verify Akun terlebih dahulu!"});
 
-        return res.status(200).json({status: "Login Berhasil"});
+        const payload = {
+            user_id: user.user_id,
+            email: user.email,
+            username: user.username
+        }
+
+        const accesstoken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, { expiresIn: "5m" });
+        const refreshtoken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+
+        await Prisma.refresh_token.create({
+            data: {
+                refresh_token: refreshtoken
+            }
+        });
+
+        return res.status(200).json({status: "Login Berhasil", accesstoken, refreshtoken});
     } catch (err) {
         return res.status(500).json({status: "Server Error", error: err.message});
     }
 }
 
-module.exports = { register, verify, login };
+const logout = async (req,res) => {
+    const { refreshtoken } = req.body;
+    if(!refreshtoken) return res.status(400).json({ status: "Bad Request", error: "refreshToken diperlukan"});
+
+    try {
+        await Prisma.refresh_token.delete({
+            where: {
+                refresh_token: refreshtoken
+            }
+        });
+
+        return res.status(200).json({ status: "Logout Berhasil" });
+    } catch(err) {
+        return res.status(500).json({ status: "Server Error", error: err.message });
+    }
+
+}
+
+module.exports = { register, verify, login, logout };

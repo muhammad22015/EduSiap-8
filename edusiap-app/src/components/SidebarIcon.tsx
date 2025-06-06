@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { getUserIdFromToken } from '@/lib/auth';
 
 interface SidebarIconProps {
   name: string;
@@ -12,23 +13,28 @@ export const SidebarIcon: React.FC<SidebarIconProps> = ({ name, svg }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    if (name === 'Story Books') {
-      router.push('/pdfReader');
-    }
-    if (name == 'Home') {
-      router.push('/')
-    }
-    if (name == 'User') {
-      router.push('/Profile')
-    }
-    if (name == 'Playlist') {
-      router.push('/Playlist')
-    }
-    if (name == 'History') {
-      router.push('/History')
+    const userId = getUserIdFromToken();
+    
+    switch (name) {
+      case 'Buku Cerita':
+        router.push('/pdfReader');
+        break;
+      case 'Beranda':
+        router.push('/');
+        break;
+      case 'User':
+        router.push('/Profile');
+        break;
+      case 'Daftar Putar':
+        router.push('/Playlist');
+        break;
+      case 'Riwayat Tontonan':
+        router.push('/History');
+        break;
+      default:
+        break;
     }
   };
-
 
   return (
     <div
@@ -36,7 +42,7 @@ export const SidebarIcon: React.FC<SidebarIconProps> = ({ name, svg }) => {
       title={name}
       onClick={handleClick}
     >
-      <div dangerouslySetInnerHTML={{ __html: svg }} className='flex items-center justify-evenly max-sm:scale-75'></div>
+      <div dangerouslySetInnerHTML={{ __html: svg }} className='flex items-center justify-evenly scale-75'></div>
       <span className='block relative -top-4 w-full text-center text-gray-700 font-bold text-lg'>{name}</span>
     </div>
   );

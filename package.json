@@ -1,0 +1,29 @@
+{
+  "dependencies": {
+    "openai": "^4.103.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.7"
+  },
+  "name": "edusiap-8",
+  "version": "1.0.0",
+  "description": "EduSiap adalah platform edukasi berbasis web yang dirancang untuk membantu orang tua, guru, dan pengasuh dalam membimbing anak-anak pra-SD dengan konten interaktif seperti video edukasi, kuis, dan buku cerita.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muhammad22015/EduSiap-8.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/muhammad22015/EduSiap-8/issues"
+  },
+  "homepage": "https://github.com/muhammad22015/EduSiap-8#readme"
+}

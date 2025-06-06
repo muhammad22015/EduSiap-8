@@ -5,6 +5,7 @@ interface Video {
   video_id: number;
   title: string;
   video_link: string;
+  thumbnail: string;
 }
 
 interface VideoGridProps {
@@ -50,7 +51,7 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ searchQuery }) => {
           <p className="text-gray-600 text-lg">Memuat video...</p>
         </div>
       ) : (
-        <div className="grid gap-12 grid-cols-2 max-md:grid-cols-1 xl:grid-cols-3">
+        <div className="grid gap-12 grid-cols-2 max-lg:grid-cols-1 xl:grid-cols-3 2xl:grid-cols-4">
           {filteredVideos.length > 0 ? (
             filteredVideos.map((video) => (
               <VideoCard
@@ -58,6 +59,7 @@ export const VideoGrid: React.FC<VideoGridProps> = ({ searchQuery }) => {
                 id={video.video_id}
                 title={video.title}
                 video_link={video.video_link}
+                thumbnail={video.thumbnail}
               />
             ))
           ) : (

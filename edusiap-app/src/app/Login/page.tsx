@@ -3,34 +3,26 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import LoginForm from './LoginForm';
+import { loginUser } from '@/lib/api';
+import { setTokens } from '@/lib/auth';
 
 export default function Home() {
   const router = useRouter();
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      const response = await fetch('http://localhost:5000/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        // Simpan token JWT jika diberikan
-        if (result.token) {
-          localStorage.setItem('token', result.token);
-        }
+      const result = await loginUser({ email, password });
+      
+      if (result.status === "Login Berhasil") {
+        // Store both tokens
+        setTokens(result.accesstoken, result.refreshtoken);
+        router.push('/'); // Redirect to home/dashboard
         return { status: 'Login Berhasil' };
-      } else {
-        return { status: result.status || 'Login Gagal' };
       }
+      return { status: result.error || 'Login Gagal' };
     } catch (error) {
       console.error('Login error:', error);
-      return { status: 'Terjadi kesalahan saat login.' };
+      return { status: error instanceof Error ? error.message : 'Terjadi kesalahan saat login.' };
     }
   };
 
@@ -39,7 +31,6 @@ export default function Home() {
   };
 
   const handleSignUp = () => {
-    console.log('User clicked Sign Up');
     router.push('/signup');
   };
 
@@ -47,17 +38,13 @@ export default function Home() {
     router.push('/');
   };
 
-  // const handleAddVideo = () => {
-  //   router.push('/AddVideo');
-  // };
-
   return (
     <LoginForm
       onSubmit={handleLogin}
       onForgotPassword={handleForgotPassword}
       onSignUp={handleSignUp}
       onGoToGallery={handleGoToGallery}
-      // onAddVideo={handleAddVideo}
+      onContinueWithoutLogin={handleGoToGallery}
     />
   );
 }

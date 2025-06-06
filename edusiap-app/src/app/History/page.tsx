@@ -1,16 +1,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Header } from "@/components/Header";
+import { apiClient } from "@/lib/apiClient";
+import { getUserIdFromToken } from "@/lib/auth";
 
 interface Video {
   video_id: number;
   video_url: string;
   title: string;
   description: string;
-  video_link: string; // Mengambil video_link dari tabel
+  video_link: string;
+  thumbnail?: string;
 }
 
 interface History {
@@ -25,56 +28,53 @@ const HistoryPage = () => {
   const [histories, setHistories] = useState<History[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const searchParams = useSearchParams();
   const router = useRouter();
-
-  const userId = searchParams.get("id");
-
-  // Fungsi untuk mengubah URL YouTube menjadi format embed
-  const getEmbedUrl = (url: string) => {
-    const regex = /(?:https?:\/\/)?(?:www\.)?youtube\.com\/(?:watch\?v=|embed\/)([^&?/]+)/;
-    const match = url.match(regex);
-    if (match && match[1]) {
-      return `https://www.youtube.com/embed/${match[1]}`;
-    }
-    return url; // Jika bukan URL YouTube, kembalikan url yang asli
-  };
 
   useEffect(() => {
     const fetchHistory = async () => {
+      const userId = getUserIdFromToken();
       if (!userId) {
-        setError("User ID tidak ditemukan di query parameter.");
+        setError("User not authenticated");
         setLoading(false);
+        router.push("/login");
         return;
       }
 
       try {
-        const res = await fetch(`http://localhost:5000/history?id=${userId}`);
-        const data = await res.json();
+        const historyData = await apiClient(`/history?id=${userId}`);
+        const videoData = await apiClient("/videos");
 
-        if (!res.ok) {
-          throw new Error(data.message || "Gagal mengambil data history.");
-        }
+        const videoList: Video[] = videoData.response;
 
-        if (data?.response?.length > 0) {
-          setHistories(data.response);
-        } else {
-          setHistories([]);
-        }
+        const combined = historyData.response.map((history: History) => {
+          const matchedVideo = videoList.find((v) => v.video_id === history.video_id);
+          return {
+            ...history,
+            video: matchedVideo || null,
+          };
+        });
+
+        setHistories(combined);
       } catch (err: any) {
         setError(err.message || "Terjadi kesalahan saat memuat data.");
+        if (err.message.includes("Session expired")) {
+          router.push("/login");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchHistory();
-  }, [userId]);
+  }, [router]);
 
   return (
-    <div className="flex min-h-screen bg-orange-100">
+    <div className="flex min-h-screen bg-orange-100 relative">
+      {/* Background doodle yang responsif */}
+      <div className="pointer-events-none absolute inset-0 opacity-20 z-0 bg-[url('/doodle.jpg')] bg-no-repeat bg-center bg-cover" />
+
       <Sidebar />
-      <main className="flex-1 ml-[97px]">
+      <main className="flex-1 ml-[97px] relative z-10">
         <Header />
         <div className="flex flex-col items-center w-full px-4 py-10">
           <h1 className="text-4xl font-bold mb-8 text-black text-center">
@@ -91,33 +91,36 @@ const HistoryPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full max-w-6xl">
               {histories.map((item) => (
                 <div
-                  key={`${item.history_id}-${item.video_id}`} // Kombinasikan history_id dan video_id untuk memastikan keunikan
-                  className="p-4 bg-white rounded-lg shadow hover:shadow-lg transition cursor-pointer"
-                  onClick={() => router.push(`/WatchVideo/${item.video_id}`)} // Navigasi ke halaman video
+                  key={`${item.history_id}-${item.video_id}`}
+                  onClick={() => router.push(`/WatchVideo/${item.video_id}`)}
+                  className="relative p-4 bg-white rounded-lg shadow transition-transform duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer group"
                 >
-                  {/* Menampilkan iframe video */}
-                  <div className="w-full mb-4">
-                    {item.video?.video_link && (
-                      <div className="aspect-video">
-                        <iframe
-                          src={getEmbedUrl(item.video.video_link)} // Menggunakan fungsi getEmbedUrl
-                          title={item.video.title}
-                          frameBorder="0"
-                          allowFullScreen
-                          className="w-full h-56 rounded-md pointer-events-none"
-                        />
-                      </div>
-                    )}
-                  </div>
+                  {/* Overlay transparan saat hover */}
+                  <div className="absolute inset-0 bg-[#F6E9DA]/90 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 pointer-events-none" />
 
-                  {/* Menampilkan judul video */}
-                  <h2 className="text-xl font-semibold text-center text-lime-900">
-                    {item.video?.title ?? "Judul tidak tersedia"}
-                  </h2>
-                  <p className="text-sm text-center text-gray-600">
-                    Ditonton pada:{" "}
-                    {new Date(item.watched_at).toLocaleString("id-ID")}
-                  </p>
+                  {/* Konten kartu */}
+                  <div className="relative z-20">
+                    <div className="w-full mb-4">
+                      {item.video?.thumbnail ? (
+                        <img
+                          src={item.video.thumbnail}
+                          alt={item.video.title}
+                          className="w-full h-56 object-contain rounded-md"
+                        />
+                      ) : (
+                        <div className="w-full h-56 bg-gray-200 rounded-md flex items-center justify-center">
+                          <span className="text-gray-500">Thumbnail tidak tersedia</span>
+                        </div>
+                      )}
+                    </div>
+                    <h2 className="text-xl font-semibold text-center text-lime-900">
+                      {item.video?.title ?? "Judul tidak tersedia"}
+                    </h2>
+                    <p className="text-sm text-center text-gray-600">
+                      Ditonton pada:{" "}
+                      {new Date(item.watched_at).toLocaleString("id-ID")}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
