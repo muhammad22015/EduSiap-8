@@ -1,10 +1,6 @@
 steps:
-  - name: 'gcr.io/cloud-builders/npm'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        npm ci
-        NEXT_DISABLE_LINT=true NEXT_IGNORE_TYPE_ERRORS=true npm run build
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA', '.']
+
 images:
-  - gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA
+  - 'gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA'
