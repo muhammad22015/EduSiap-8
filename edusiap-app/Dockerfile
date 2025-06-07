@@ -1,19 +1,35 @@
-# Gunakan image Node.js resmi
-FROM node:18
+# 1. Step: Build stage
+FROM node:18 AS builder
 
-# Buat direktori kerja
 WORKDIR /app
 
-# Salin package.json dan install dependensi
-COPY package*.json ./
+# Copy only necessary files first to optimize cache
+COPY edusiap-app/package*.json ./
+COPY edusiap-app/tsconfig.json ./
+COPY edusiap-app/next.config.js ./
+
+# Install dependencies
 RUN npm install
 
-# Salin seluruh project
-COPY . .
+# Copy all other source code
+COPY edusiap-app/ .
 
-# Build Next.js tanpa lint/type check
-RUN npm run build || true
+# Build the Next.js app
+RUN npm run build
 
-# Jalankan aplikasi di port 3000
+# 2. Step: Production image
+FROM node:18-alpine AS runner
+
+WORKDIR /app
+
+# Copy only necessary artifacts from builder
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+# Next.js uses port 3000 by default
 EXPOSE 3000
+
+# Start the server
 CMD ["npm", "start"]
