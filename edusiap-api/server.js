@@ -1,19 +1,26 @@
-const express = require('express');
-const app = express();
-const router = require('./routes')
-const cors = require('cors');
+// server.js
 
+const express = require('express');
+const cors = require('cors');
+const router = require('./routes');
+
+const app = express();
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req,res) => {
-    res.send("Welcome to EduSiap API");
-})
+// Default route
+app.get('/', (req, res) => {
+  res.send('Welcome to EduSiap API 👋');
+});
 
+// API routes
 app.use('/', router);
 
-const PORT = process.env.PORT || 8080;
+// Port config for Cloud Run
+const PORT = process.env.PORT || 8080; // Cloud Run default = 8080
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`)
-})
+  console.log(`✅ EduSiap API is running at http://localhost:${PORT}`);
+});
