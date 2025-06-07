@@ -1,0 +1,14 @@
+steps:
+  - name: 'gcr.io/cloud-builders/npm'
+    dir: 'edusiap-app'
+    args: ['install']
+
+  - name: 'gcr.io/cloud-builders/npm'
+    dir: 'edusiap-app'
+    args: ['run', 'build']
+
+  - name: 'gcr.io/cloud-builders/npm'
+    dir: 'edusiap-app'
+    args: ['run', 'start']
+
+timeout: '900s'
