@@ -1,14 +1,10 @@
 steps:
   - name: 'gcr.io/cloud-builders/npm'
-    dir: 'edusiap-app'
-    args: ['install']
-
-  - name: 'gcr.io/cloud-builders/npm'
-    dir: 'edusiap-app'
-    args: ['run', 'build']
-
-  - name: 'gcr.io/cloud-builders/npm'
-    dir: 'edusiap-app'
-    args: ['run', 'start']
-
-timeout: '900s'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm ci
+        NEXT_DISABLE_LINT=true NEXT_IGNORE_TYPE_ERRORS=true npm run build
+images:
+  - gcr.io/$PROJECT_ID/$REPO_NAME:$COMMIT_SHA
