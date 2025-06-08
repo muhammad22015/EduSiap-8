@@ -12,7 +12,7 @@ COPY next.config.js ./
 RUN npm install
 
 # Copy all other source code
-COPY edusiap-app/ .
+COPY . .
 
 # Build the Next.js app
 RUN npm run build
