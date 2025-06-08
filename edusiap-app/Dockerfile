@@ -4,9 +4,9 @@ FROM node:18 AS builder
 WORKDIR /app
 
 # Copy only necessary files first to optimize cache
-COPY edusiap-app/package*.json ./
-COPY edusiap-app/tsconfig.json ./
-COPY edusiap-app/next.config.js ./
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY next.config.js ./
 
 # Install dependencies
 RUN npm install
