@@ -1,6 +1,7 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/edusiap', '.' ]
-    dir: 'edusiap-app'  # ✅ arahkan ke folder yang berisi Dockerfile
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/edusiap', '.']
+    dir: 'edusiap-app'
+
 images:
-  - gcr.io/$PROJECT_ID/edusiap
+  - 'gcr.io/$PROJECT_ID/edusiap'
